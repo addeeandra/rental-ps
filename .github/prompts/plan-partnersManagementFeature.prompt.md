@@ -1,0 +1,29 @@
+## Plan: Partners Management Feature (Final)
+
+A full CRUD feature for managing business partners (Client/Supplier/both) with user-facing CSV import, using Dialog-based forms for a clean, responsive interface. Partners table with auto-generated sequential codes (P-0001, P-0002, etc.) and comprehensive contact/address fields.
+
+### Steps
+
+1. **Create database structure** - Add [partners migration](core/database/migrations) with fields (id, code (string, unique, indexed, format "P-XXXX"), type (string: 'Client', 'Supplier', 'Supplier & Client'), name (required), phone (nullable), mobile_phone (nullable), email (nullable, unique), address_line_1, address_line_2, city, province, postal_code, country, website, notes (text), virtual_account, timestamps, soft_deletes). Add unique index on email and composite index on type for filtering.
+
+2. **Build backend foundation** - Create [Partner model](core/app/Models/Partner.php) with fillable fields, `boot()` method to auto-generate code on creating event (query max code like "P-0123", extract number, increment to "P-0124"), accessor for formatted code, [PartnerController](core/app/Http/Controllers/PartnerController.php) with index (paginated, searchable, filterable), store, update, destroy, import, and downloadTemplate methods. Add routes including `GET /partners/template` for CSV download.
+
+3. **Create Form Request validation** - Build [PartnerStoreRequest](core/app/Http/Requests/PartnerStoreRequest.php) with rules (code: optional|unique:partners,code, type: required|in:Client,Supplier,Supplier & Client, name: required|string|max:255, email: nullable|email|unique:partners,email) and [PartnerUpdateRequest](core/app/Http/Requests/PartnerUpdateRequest.php) with same rules but ignore current partner ID on unique checks. Include custom error messages for clarity.
+
+4. **Implement CSV import with template** - Add `downloadTemplate()` method in PartnerController generating CSV with semicolon delimiter, headers matching database fields, and 2 sample rows showing correct format. Add `import()` method that parses uploaded CSV, transforms phone numbers from scientific notation (6,28215E+12 → 628215000000000), validates each row, checks for duplicate emails (skip with error "Email already exists: {email}"), collects validation errors per row, bulk inserts valid partners, returns JSON with counts (total, imported, skipped) and detailed errors array (row number, fields, messages).
+
+5. **Build partner listing page** - Create [resources/js/pages/partners/Index.vue](core/resources/js/pages/partners/Index.vue) with AppLayout, page header with title "Partners" and action buttons ("New Partner", "Import CSV", "Download Template"), search/filter bar (search Input debounced for name/email/code, type Select filter), responsive Card grid showing partner code as subtitle, name as Card title, colored Badge for type (Client=blue, Supplier=green, both=purple), contact details (email, phone, city), DropdownMenu with Edit/Delete actions, and pagination links.
+
+6. **Create partner form Dialog** - Build [PartnerFormDialog.vue](core/resources/js/pages/partners/PartnerFormDialog.vue) with Dialog, DialogContent, DialogHeader with conditional title ("New Partner" / "Edit Partner"), Form with three sections using grid layout: Basic Info (code Input with placeholder "Auto-generated (P-XXXX)" if create mode and empty, type Select with three options, name Input required, email Input, phone Input, mobile_phone Input), Address section (address_line_1/2, city, province, postal_code, country), Additional section (website Input type="url", notes Textarea, virtual_account Input), DialogFooter with cancel/save Buttons, handle processing state and errors display with InputError component.
+
+7. **Create import Dialog with validation feedback** - Build [ImportPartnersDialog.vue](core/resources/js/pages/partners/ImportPartnersDialog.vue) with Dialog, file Input (.csv only), Alert with info variant explaining format requirements and duplicate handling, preview section showing parsed rows in table (limited to 5), Form submit with processing Spinner, success state showing Alert with summary "Successfully imported X partners. Y rows skipped", Accordion or collapsible section for skipped rows showing table with columns (Row #, Issue, Details) listing each validation error clearly ("Row 15: Duplicate email - email@example.com already exists", "Row 23: Invalid type - must be Client, Supplier, or Supplier & Client"), close/reset Button to clear state.
+
+8. **Add delete confirmation Dialog** - Create [DeletePartnerDialog.vue](core/resources/js/pages/partners/DeletePartnerDialog.vue) with Dialog triggered from DropdownMenu, DialogHeader with title "Delete Partner", DialogDescription showing partner code and name with warning "This action cannot be undone. All partner data will be permanently deleted.", Form bound to destroy route, DialogFooter with cancel (secondary variant) and Delete (destructive variant) Buttons, handle errors if deletion fails due to related records.
+
+### Further Considerations
+
+1. **CSV encoding and special characters** - The import should handle UTF-8 encoding properly for Indonesian characters (Ç, é, etc.) and addresses with special characters. Consider adding encoding detection or requiring UTF-8 format explicitly in template/instructions.
+
+2. **Search optimization** - With growing partner data, consider adding full-text search index on name/email/city fields, or implement debounced search with minimum 2-3 characters to avoid performance issues on large datasets.
+
+3. **Export functionality** - Users may want to export filtered partners back to CSV for reporting/backup. Consider adding "Export" button that downloads current filtered results as CSV with same format as import template for round-trip compatibility.
