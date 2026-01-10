@@ -1,0 +1,119 @@
+x-core-cli: &core-cli
+  hostname: '${NGE_HOSTNAME:-nge-hostname}'
+  image: 'rentsu/web-core:latest'
+  user: '${NGE_USER:-rentsu}'
+  restart: unless-stopped
+  environment:
+    DOCKER_ENV: '${APP_ENV}'
+    DOCKER_WORKERS: '${DOCKER_WORKERS:-auto}'
+  networks:
+    - intl
+  working_dir: /var/www
+  logging:
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  core:
+    hostname: '${NGE_HOSTNAME:-nge-hostname}'
+    build:
+      context: .docker/image
+      dockerfile: Dockerfile
+      args:
+        - 'PHP_VERSION=${PHP_VERSION:-8.3}'
+        - 'USER_CONTAINER=${NGE_USER:-rentsu}'
+        - 'PUID=${NGE_PUID:-1000}'
+        - 'PGID=${NGE_PGID:-1000}'
+    image: 'rentsu/web-core:latest'
+    user: '${NGE_USER:-rentsu}'
+    restart: unless-stopped
+    ports:
+      - '${APP_PORT:-8050}:80'
+    environment:
+      DOCKER_ENV: '${APP_ENV}'
+      DOCKER_WORKERS: '${DOCKER_WORKERS:-auto}'
+      ALWAYS_MIGRATE: true # run migrations on startup only in `core` service
+      ALWAYS_BUILD: true # run pnpm install and build on startup only in `core` service
+    volumes:
+      - '.:/var/www'
+      - './storage/app/psysh:/home/${NGE_USER}/.config/psysh'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - intl
+    depends_on:
+      pgsql:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      mailpit:
+        condition: service_started
+  horizon:
+    <<: *core-cli
+    command: [ "/usr/bin/php", "/var/www/artisan", "horizon" ]
+    volumes:
+      - ./:/var/www
+  scheduler:
+    <<: *core-cli
+    command: [ "/usr/bin/php", "/var/www/artisan", "schedule:work" ]
+    volumes:
+      - ./:/var/www
+  pgsql:
+    image: 'postgres:17'
+    ports:
+      - '${FORWARD_DB_PORT:-5432}:5432'
+    environment:
+      PGPASSWORD: '${DB_PASSWORD:-secret}'
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD:-secret}'
+      POSTGRES_INITDB_ARGS: '--data-checksums'
+    volumes:
+      - 'pgsql-data:/var/lib/postgresql/data'
+      - '.docker/pgsql/create-testing-database.sql:/docker-entrypoint-initdb.d/10-create-testing-database.sql'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - intl
+    healthcheck:
+      test: [ CMD, pg_isready, '-q', '-d', '${DB_DATABASE}', '-U', '${DB_USERNAME}' ]
+      retries: 3
+      timeout: 5s
+  redis:
+    image: 'redis:7.2'
+    ports:
+      - '${FORWARD_REDIS_PORT:-6379}:6379'
+    volumes:
+      - 'redis-data:/data'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - intl
+    healthcheck:
+      test: [ CMD, redis-cli, 'ping' ]
+      retries: 3
+      timeout: 5s
+  mailpit:
+    image: 'axllent/mailpit:latest'
+    ports:
+      - '${FORWARD_MAILPIT_PORT:-1025}:1025'
+      - '${FORWARD_MAILPIT_DASHBOARD_PORT:-8025}:8025'
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - intl
+networks:
+  intl:
+    driver: bridge
+volumes:
+  pgsql-data:
+  redis-data:

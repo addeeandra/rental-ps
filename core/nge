@@ -1,0 +1,373 @@
+#!/usr/bin/env bash
+
+UNAMEOUT="$(uname -s)"
+
+# Verify operating system is supported...
+case "${UNAMEOUT}" in
+    Linux*)             MACHINE=linux;;
+    Darwin*)            MACHINE=mac;;
+    *)                  MACHINE="UNKNOWN"
+esac
+
+if [ "$MACHINE" == "UNKNOWN" ]; then
+    echo "Unsupported operating system [$(uname -s)]. Laravel Nge supports macOS, Linux, and Windows (WSL2)." >&2
+
+    exit 1
+fi
+
+# Determine if stdout is a terminal...
+if test -t 1; then
+    # Determine if colors are supported...
+    ncolors=$(tput colors)
+
+    if test -n "$ncolors" && test "$ncolors" -ge 8; then
+        BOLD="$(tput bold)"
+        YELLOW="$(tput setaf 3)"
+        GREEN="$(tput setaf 2)"
+        NC="$(tput sgr0)"
+    fi
+fi
+
+# Function that prints the available commands...
+function display_help {
+    echo "Laravel Nge"
+    echo
+    echo "${YELLOW}Usage:${NC}" >&2
+    echo "  nge COMMAND [options] [arguments]"
+    echo
+    echo "Unknown commands are passed to the docker-compose binary."
+    echo
+    echo "${YELLOW}docker-compose Commands:${NC}"
+    echo "  ${GREEN}nge up${NC}        Start the application"
+    echo "  ${GREEN}nge up -d${NC}     Start the application in the background"
+    echo "  ${GREEN}nge stop${NC}      Stop the application"
+    echo "  ${GREEN}nge restart${NC}   Restart the application"
+    echo "  ${GREEN}nge ps${NC}        Display the status of all containers"
+    echo
+    echo "${YELLOW}Artisan Commands:${NC}"
+    echo "  ${GREEN}nge artisan ...${NC}          Run an Artisan command"
+    echo "  ${GREEN}nge artisan queue:work${NC}"
+    echo
+    echo "${YELLOW}PHP Commands:${NC}"
+    echo "  ${GREEN}nge php ...${NC}   Run a snippet of PHP code"
+    echo "  ${GREEN}nge php -v${NC}"
+    echo
+    echo "${YELLOW}Composer Commands:${NC}"
+    echo "  ${GREEN}nge composer ...${NC}                       Run a Composer command"
+    echo "  ${GREEN}nge composer require laravel/sanctum${NC}"
+    echo
+    echo "${YELLOW}Node Commands:${NC}"
+    echo "  ${GREEN}nge node ...${NC}         Run a Node command"
+    echo "  ${GREEN}nge node --version${NC}"
+    echo
+    echo "${YELLOW}NPM Commands:${NC}"
+    echo "  ${GREEN}nge npm ...${NC}        Run a npm command"
+    echo "  ${GREEN}nge npx${NC}            Run a npx command"
+    echo "  ${GREEN}nge npm run prod${NC}"
+    echo
+    echo "${YELLOW}PNPM Commands:${NC}"
+    echo "  ${GREEN}nge pnpm ...${NC}        Run a pnpm command"
+    echo "  ${GREEN}nge pnpx${NC}            Run a pnpx command"
+    echo "  ${GREEN}nge pnpm run prod${NC}"
+    echo
+    echo "${YELLOW}Yarn Commands:${NC}"
+    echo "  ${GREEN}nge yarn ...${NC}        Run a Yarn command"
+    echo "  ${GREEN}nge yarn run prod${NC}"
+    echo
+    echo "${YELLOW}Database Commands:${NC}"
+    echo "  ${GREEN}nge mysql${NC}     Start a MySQL CLI session within the 'mysql' container"
+    echo "  ${GREEN}nge mariadb${NC}   Start a MySQL CLI session within the 'mariadb' container"
+    echo "  ${GREEN}nge psql${NC}      Start a PostgreSQL CLI session within the 'pgsql' container"
+    echo "  ${GREEN}nge redis${NC}     Start a Redis CLI session within the 'redis' container"
+    echo
+    echo "${YELLOW}Running Tests:${NC}"
+    echo "  ${GREEN}nge test${NC}          Run the PHPUnit tests via the Artisan test command"
+    echo "  ${GREEN}nge phpunit ...${NC}   Run PHPUnit"
+    echo "  ${GREEN}nge pest ...${NC}      Run Pest"
+    echo "  ${GREEN}nge pint ...${NC}      Run Pint"
+    echo
+    echo "${YELLOW}Container CLI:${NC}"
+    echo "  ${GREEN}nge shell${NC}        Start a shell session within the application container"
+    echo "  ${GREEN}nge bash${NC}         Alias for 'nge shell'"
+    echo "  ${GREEN}nge root-shell${NC}   Start a root shell session within the application container"
+    echo "  ${GREEN}nge root-bash${NC}    Alias for 'nge root-shell'"
+    echo "  ${GREEN}nge tinker${NC}       Start a new Laravel Tinker session"
+    echo
+    echo "${YELLOW}Sharing:${NC}"
+    echo "  ${GREEN}nge expose${NC}   Expose the application publicly via a temporary URL"
+    echo "  ${GREEN}nge open${NC}    Open the site in your browser"
+    echo
+    echo "${YELLOW}Binaries:${NC}"
+    echo "  ${GREEN}nge bin ...${NC}   Run Composer binary scripts from the vendor/bin directory"
+    echo
+    echo "${YELLOW}Customization:${NC}"
+    # echo "  ${GREEN}nge artisan nge:publish${NC}   Publish the Nge configuration files"
+    echo "  ${GREEN}nge build --no-cache${NC}       Rebuild all of the Nge containers"
+
+    exit 1
+}
+
+# Proxy the "help" command...
+if [ $# -gt 0 ]; then
+    if [ "$1" == "help" ] || [ "$1" == "-h" ] || [ "$1" == "-help" ] || [ "$1" == "--help" ]; then
+        display_help
+    fi
+else
+    display_help
+fi
+
+# Source the ".env" file so Laravel's environment variables are available...
+# shellcheck source=/dev/null
+if [ -n "$APP_ENV" ] && [ -f ./.env."$APP_ENV" ]; then
+  source ./.env."$APP_ENV";
+elif [ -f ./.env ]; then
+  source ./.env;
+fi
+
+# Define environment variables...
+export APP_PORT=${APP_PORT}
+export APP_SERVICE=${APP_SERVICE:-"core"}
+export DB_PORT=${DB_PORT}
+export NGE_USER=${NGE_USER:-$USER}
+export NGE_PUID=${NGE_PUID:-$UID}
+export NGE_PGID=${NGE_PGID:-$(id -g)}
+
+export NGE_EXPOSE_DASHBOARD=${NGE_EXPOSE_DASHBOARD}
+export NGE_EXPOSE_SERVER_HOST=${NGE_EXPOSE_SERVER_HOST:-"laravel-nge.site"}
+export NGE_EXPOSE_SERVER_PORT=${NGE_EXPOSE_SERVER_PORT}
+export NGE_EXPOSE_SUBDOMAIN=${NGE_EXPOSE_SUBDOMAIN:-""}
+export NGE_EXPOSE_DOMAIN=${NGE_EXPOSE_DOMAIN:-"$NGE_EXPOSE_SERVER_HOST"}
+export NGE_EXPOSE_SERVER=${NGE_EXPOSE_SERVER:-""}
+
+# Function that outputs Nge is not running...
+function nge_is_not_running {
+    echo "${BOLD}Nge is not running, use ${YELLOW}./nge once${NC} if you still want to run the command.${NC}" >&2
+    echo "" >&2
+    echo "${BOLD}You may Nge using the following commands:${NC} ${GREEN}./vendor/bin/nge up${NC} or ${GREEN}./vendor/bin/nge up -d${NC}" >&2
+
+    exit 1
+}
+
+# Function that run docker compose...
+function compose() {
+    if docker compose &> /dev/null; then
+        DOCKER_COMPOSE=(docker compose)
+    else
+        DOCKER_COMPOSE=(docker-compose)
+    fi
+
+    "${DOCKER_COMPOSE[@]}" $@
+}
+
+EXEC="yes"
+if [ -z "$NGE_SKIP_CHECKS" ]; then
+    # Ensure that Docker is running...
+    if ! docker info > /dev/null 2>&1; then
+        echo "${BOLD}Docker is not running.${NC}" >&2
+
+        exit 1
+    fi
+
+    # Determine if Services is currently up...
+    if compose ps "$APP_SERVICE" 2>&1 | grep 'Exit\|exited'; then
+        echo "${BOLD}Shutting down old Nge processes...${NC}" >&2
+
+        compose down > /dev/null 2>&1
+
+        EXEC="no"
+    elif [ -z "$(compose ps -q)" ]; then
+        EXEC="no"
+    fi
+fi
+
+# running APP_SERVICE with `compose run|exec`
+function app_crun() {
+    if [ $ONCE == "no" ]; then
+        # run via new container
+        if [ -z "$NGE_USER" ]; then
+            echo "${YELLOW}NGE_USER not set. Running with default user.${NC}" >&2
+            compose exec -it $APP_SERVICE $@
+        else
+            compose exec -it --user=$NGE_USER $APP_SERVICE $@
+        fi
+    else
+        # run via existing container
+        if [ -z "$NGE_USER" ]; then
+            echo "${YELLOW}NGE_USER not set. Running with default user.${NC}" >&2
+            compose run --rm $APP_SERVICE $@
+        else
+            compose run --rm --user=$NGE_USER $APP_SERVICE $@
+        fi
+    fi
+}
+
+# running APP_SERVICE with `compose run|exec` as root
+function app_rrun() {
+    if [ $ONCE == "no" ]; then
+        compose exec -it --user=root $APP_SERVICE $@
+    else
+        compose run --rm --user=root $APP_SERVICE $@
+    fi
+}
+
+ONCE="no"
+function once() {
+    ONCE="yes"
+    "$@" # call arguments verbatim
+}
+
+function php() {
+    app_crun $FUNCNAME $@
+}
+
+function artisan() {
+    app_crun php $FUNCNAME $@
+}
+
+function composer() {
+    app_crun $FUNCNAME $@
+}
+
+function node() {
+    app_crun $FUNCNAME $@
+}
+
+function npm() {
+    app_crun $FUNCNAME $@
+}
+
+function npx() {
+    app_crun $FUNCNAME $@
+}
+
+function pnpm() {
+    app_crun $FUNCNAME $@
+}
+
+function pnpx() {
+    app_crun $FUNCNAME $@
+}
+
+function yarn() {
+    app_crun $FUNCNAME $@
+}
+
+function mysql() {
+    app_crun $FUNCNAME $@
+}
+
+function psql() {
+    app_crun pgsql $@
+}
+
+function pnpm() {
+    app_crun $FUNCNAME $@
+}
+
+function mariadb() {
+    app_crun $FUNCNAME $@
+}
+
+function redis() {
+    app_crun $FUNCNAME $@
+}
+
+function test() {
+    app_crun php artisan test $@
+}
+
+function phpunit() {
+    app_crun php vendor/bin/phpunit $@
+}
+
+function pest() {
+    app_crun php vendor/bin/pest $@
+}
+
+function pint() {
+    app_crun php vendor/bin/pint $@
+}
+
+function bin() {
+    app_crun php vendor/bin/$1 $@
+}
+
+function shell() {
+    app_crun sh
+}
+
+function bash() {
+    app_crun bash
+}
+
+function root-shell() {
+    app_rrun sh
+}
+
+function root-bash() {
+    app_rrun bash
+}
+
+function tinker() {
+    app_crun php artisan tinker
+}
+
+function octane:reload() {
+    artisan octane:reload
+}
+
+function expose() {
+    if [ "$EXEC" == "yes" ]; then
+        docker run --init --rm --add-host=host.docker.internal:host-gateway -p "$NGE_EXPOSE_DASHBOARD":4040 -t beyondcodegmbh/expose-server:latest expose http://host.docker.internal:"$APP_PORT" \
+            --server-host="$NGE_EXPOSE_SERVER_HOST" \
+            --server-port="$NGE_EXPOSE_SERVER_PORT" \
+            --auth="$NGE_EXPOSE_TOKEN" \
+            --server="$NGE_EXPOSE_SERVER" \
+            --subdomain="$NGE_EXPOSE_SUBDOMAIN" \
+            --domain="$NGE_EXPOSE_DOMAIN" \
+            "$@"
+    else
+        nge_is_not_running
+    fi
+}
+
+function open() {
+    if [ "$EXEC" == "yes" ]; then
+        if command -v open &>/dev/null; then
+            OPEN="/usr/bin/open"
+        elif command -v xdg-open &>/dev/null; then
+            OPEN="/usr/bin/xdg-open"
+        else
+            echo "Neither open nor xdg-open is available. Exiting."
+            exit 1
+        fi
+
+        if [[ -n "$APP_PORT" && "$APP_PORT" != "80" ]]; then
+            FULL_URL="${APP_URL}:${APP_PORT}"
+        else
+            FULL_URL="$APP_URL"
+        fi
+
+        $OPEN "$FULL_URL"
+    else
+        nge_is_not_running
+    fi
+}
+
+if [ $1 == "app_crun" ] || [ $1 == "app_rrun" ] ; then
+    display_help
+fi
+
+# check if docker-compose.yml exists
+if [ ! -f "docker-compose.yml" ]; then
+    echo "docker-compose.yml not found. Have you run ${YELLOW}artisan nge:install${NC}?" >&2
+
+    exit 1
+fi
+
+if declare -f "$1" > /dev/null ; then
+    "$@" # call function verbatim
+else
+    echo "Running ${YELLOW}docker compose${NC} .."
+    compose $@ # if there's no function
+fi
