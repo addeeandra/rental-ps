@@ -18,3 +18,28 @@ export interface Partner {
     notes: string | null;
     created_at: string;
 }
+
+export interface Category {
+    id: number;
+    code: string;
+    name: string;
+    description: string | null;
+    products_count?: number;
+    created_at: string;
+}
+
+export type RentalDuration = 'hour' | 'day' | 'week' | 'month';
+
+export interface Product {
+    id: number;
+    code: string;
+    name: string;
+    description: string | null;
+    category_id: number;
+    category?: Category;
+    sales_price: number;
+    rental_price: number;
+    uom: string;
+    rental_duration: RentalDuration;
+    created_at: string;
+}
