@@ -1,0 +1,345 @@
+<script setup lang="ts">
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { debounce } from '@/lib/utils';
+import type { BreadcrumbItem } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
+import { Download, MoreVertical, Plus, Search, Upload } from 'lucide-vue-next';
+import { ref, watch } from 'vue';
+import DeletePartnerDialog from './DeletePartnerDialog.vue';
+import ImportPartnersDialog from './ImportPartnersDialog.vue';
+import PartnerFormDialog from './PartnerFormDialog.vue';
+
+interface Partner {
+    id: number;
+    code: string;
+    type: string;
+    name: string;
+    email: string | null;
+    phone: string | null;
+    mobile_phone: string | null;
+    address_line_1: string | null;
+    address_line_2: string | null;
+    city: string | null;
+    province: string | null;
+    postal_code: string | null;
+    country: string | null;
+    website: string | null;
+    notes: string | null;
+    created_at: string;
+}
+
+interface Props {
+    partners: {
+        data: Partner[];
+        links: any[];
+        meta: any;
+    };
+    filters: {
+        search?: string;
+        type?: string;
+    };
+}
+
+const props = defineProps<Props>();
+
+const breadcrumbs: BreadcrumbItem[] = [
+    {
+        title: 'Partners',
+        href: '/partners',
+    },
+];
+
+const search = ref(props.filters.search || '');
+const selectedType = ref(props.filters.type || '');
+const showCreateDialog = ref(false);
+const showImportDialog = ref(false);
+const editingPartner = ref<Partner | null>(null);
+const deletingPartner = ref<Partner | null>(null);
+
+// Debounced search
+const debouncedSearch = debounce((value: string) => {
+    router.get(
+        '/partners',
+        { search: value, type: selectedType.value },
+        {
+            preserveState: true,
+            replace: true,
+        },
+    );
+}, 300);
+
+watch(search, (value) => {
+    debouncedSearch(value);
+});
+
+watch(selectedType, (value) => {
+    router.get(
+        '/partners',
+        { search: search.value, type: value },
+        {
+            preserveState: true,
+            replace: true,
+        },
+    );
+});
+
+function getTypeBadgeVariant(type: string) {
+    switch (type) {
+        case 'Client':
+            return 'default';
+        case 'Supplier':
+            return 'secondary';
+        case 'Supplier & Client':
+            return 'outline';
+        default:
+            return 'default';
+    }
+}
+
+function handleEdit(partner: Partner) {
+    editingPartner.value = partner;
+}
+
+function handleDelete(partner: Partner) {
+    deletingPartner.value = partner;
+}
+
+function downloadTemplate() {
+    window.location.href = '/partners/template';
+}
+</script>
+
+<template>
+    <Head title="Partners" />
+
+    <AppLayout :breadcrumbs="breadcrumbs">
+        <div class="flex h-full flex-1 flex-col gap-4 p-4">
+            <!-- Header -->
+            <div
+                class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+            >
+                <div>
+                    <h1 class="text-3xl font-bold">Partners</h1>
+                    <p class="text-muted-foreground">
+                        Manage your business partners, clients, and suppliers.
+                    </p>
+                </div>
+                <div class="flex gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        @click="downloadTemplate"
+                    >
+                        <Download class="mr-2 h-4 w-4" />
+                        Template
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        @click="showImportDialog = true"
+                    >
+                        <Upload class="mr-2 h-4 w-4" />
+                        Import
+                    </Button>
+                    <Button size="sm" @click="showCreateDialog = true">
+                        <Plus class="mr-2 h-4 w-4" />
+                        New Partner
+                    </Button>
+                </div>
+            </div>
+
+            <!-- Search and Filters -->
+            <div class="flex flex-col gap-4 sm:flex-row">
+                <div class="relative flex-1">
+                    <Search
+                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                    />
+                    <Input
+                        v-model="search"
+                        placeholder="Search partners by name, email, code, or phone..."
+                        class="pl-9"
+                    />
+                </div>
+                <select
+                    v-model="selectedType"
+                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:w-[180px]"
+                >
+                    <option value="">All Types</option>
+                    <option value="Client">Client</option>
+                    <option value="Supplier">Supplier</option>
+                    <option value="Supplier & Client">Supplier & Client</option>
+                </select>
+            </div>
+
+            <!-- Partners Grid -->
+            <div
+                v-if="partners.data.length > 0"
+                class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            >
+                <Card
+                    v-for="partner in partners.data"
+                    :key="partner.id"
+                    class="relative"
+                >
+                    <CardHeader>
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1 space-y-1">
+                                <CardDescription class="text-xs">{{
+                                    partner.code
+                                }}</CardDescription>
+                                <CardTitle class="text-lg">{{
+                                    partner.name
+                                }}</CardTitle>
+                            </div>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger as-child>
+                                    <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        class="h-8 w-8"
+                                    >
+                                        <MoreVertical class="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem
+                                        @click="handleEdit(partner)"
+                                    >
+                                        Edit
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        class="text-destructive focus:text-destructive"
+                                        @click="handleDelete(partner)"
+                                    >
+                                        Delete
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
+                        <Badge :variant="getTypeBadgeVariant(partner.type)">
+                            {{ partner.type }}
+                        </Badge>
+                    </CardHeader>
+                    <CardContent class="space-y-2 text-sm">
+                        <div
+                            v-if="partner.email"
+                            class="flex items-center gap-2 text-muted-foreground"
+                        >
+                            <span class="truncate">{{ partner.email }}</span>
+                        </div>
+                        <div
+                            v-if="partner.phone || partner.mobile_phone"
+                            class="flex items-center gap-2 text-muted-foreground"
+                        >
+                            <span>{{
+                                partner.mobile_phone || partner.phone
+                            }}</span>
+                        </div>
+                        <div
+                            v-if="partner.city"
+                            class="flex items-center gap-2 text-muted-foreground"
+                        >
+                            <span
+                                >{{ partner.city
+                                }}<span v-if="partner.province"
+                                    >, {{ partner.province }}</span
+                                ></span
+                            >
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            <!-- Empty State -->
+            <Card
+                v-else
+                class="flex min-h-[400px] flex-col items-center justify-center"
+            >
+                <CardContent
+                    class="flex flex-col items-center gap-4 py-8 text-center"
+                >
+                    <div class="rounded-full bg-muted p-4">
+                        <Search class="h-8 w-8 text-muted-foreground" />
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-xl font-semibold">No partners found</h3>
+                        <p class="text-muted-foreground">
+                            {{
+                                search || selectedType
+                                    ? 'Try adjusting your search or filters.'
+                                    : 'Get started by creating your first partner.'
+                            }}
+                        </p>
+                    </div>
+                    <Button
+                        v-if="!search && !selectedType"
+                        @click="showCreateDialog = true"
+                    >
+                        <Plus class="mr-2 h-4 w-4" />
+                        Create Partner
+                    </Button>
+                </CardContent>
+            </Card>
+
+            <!-- Pagination -->
+            <div
+                v-if="partners.data.length > 0"
+                class="flex items-center justify-center gap-2"
+            >
+                <Button
+                    v-for="(link, index) in partners.links"
+                    :key="index"
+                    :variant="link.active ? 'default' : 'outline'"
+                    size="sm"
+                    :disabled="!link.url"
+                    @click="link.url && router.visit(link.url)"
+                >
+                    <span v-html="link.label" />
+                </Button>
+            </div>
+        </div>
+
+        <!-- Dialogs -->
+        <PartnerFormDialog
+            v-model:open="showCreateDialog"
+            @success="showCreateDialog = false"
+        />
+
+        <PartnerFormDialog
+            v-if="editingPartner"
+            v-model:open="editingPartner"
+            :partner="editingPartner"
+            @success="editingPartner = null"
+            @cancel="editingPartner = null"
+        />
+
+        <ImportPartnersDialog
+            v-model:open="showImportDialog"
+            @success="showImportDialog = false"
+        />
+
+        <DeletePartnerDialog
+            v-if="deletingPartner"
+            v-model:open="deletingPartner"
+            :partner="deletingPartner"
+            @success="deletingPartner = null"
+            @cancel="deletingPartner = null"
+        />
+    </AppLayout>
+</template>
