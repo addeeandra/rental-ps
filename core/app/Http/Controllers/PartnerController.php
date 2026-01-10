@@ -38,7 +38,7 @@ class PartnerController extends Controller
         }
 
         // Paginate and get partners
-        $partners = $query->orderBy('created_at', 'desc')->paginate(12)->withQueryString();
+        $partners = $query->latest()->paginate(20)->withQueryString();
 
         return Inertia::render('partners/Index', [
             'partners' => $partners,
@@ -108,6 +108,7 @@ class PartnerController extends Controller
                 'province',
                 'postal_code',
                 'country',
+                'gmap_url',
                 'website',
                 'notes',
             ], ';');
@@ -125,6 +126,7 @@ class PartnerController extends Controller
                 'Jawa Timur',
                 '60123',
                 'Indonesia',
+                'https://maps.google.com/?q=PT+Example+Indonesia',
                 'https://example.com',
                 'Sample client notes',
             ], ';');
@@ -141,6 +143,7 @@ class PartnerController extends Controller
                 'Jawa Timur',
                 '61200',
                 'Indonesia',
+                '',
                 '',
                 'Regular supplier for office supplies',
             ], ';');
@@ -215,6 +218,7 @@ class PartnerController extends Controller
                 'province' => ['nullable', 'string', 'max:255'],
                 'postal_code' => ['nullable', 'string', 'max:255'],
                 'country' => ['nullable', 'string', 'max:255'],
+                'gmap_url' => ['nullable', 'url', 'max:255'],
                 'website' => ['nullable', 'url', 'max:255'],
                 'notes' => ['nullable', 'string'],
             ], [
@@ -223,6 +227,7 @@ class PartnerController extends Controller
                 'name.required' => 'Partner name is required.',
                 'email.email' => 'Invalid email format.',
                 'email.unique' => 'Email already exists: ' . ($data['email'] ?? ''),
+                'gmap_url.url' => 'Invalid Google Maps URL format.',
                 'website.url' => 'Invalid website URL format.',
             ]);
 

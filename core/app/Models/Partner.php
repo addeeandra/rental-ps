@@ -29,6 +29,7 @@ class Partner extends Model
         'province',
         'postal_code',
         'country',
+        'gmap_url',
         'website',
         'notes',
     ];

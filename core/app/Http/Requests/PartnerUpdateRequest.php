@@ -37,6 +37,7 @@ class PartnerUpdateRequest extends FormRequest
             'province' => ['nullable', 'string', 'max:255'],
             'postal_code' => ['nullable', 'string', 'max:255'],
             'country' => ['nullable', 'string', 'max:255'],
+            'gmap_url' => ['nullable', 'url', 'max:255'],
             'website' => ['nullable', 'url', 'max:255'],
             'notes' => ['nullable', 'string'],
         ];
@@ -56,6 +57,7 @@ class PartnerUpdateRequest extends FormRequest
             'name.required' => 'Partner name is required.',
             'email.email' => 'Please provide a valid email address.',
             'email.unique' => 'This email is already associated with another partner.',
+            'gmap_url.url' => 'Please provide a valid Google Maps URL.',
             'website.url' => 'Please provide a valid website URL.',
         ];
     }

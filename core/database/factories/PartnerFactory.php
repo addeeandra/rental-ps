@@ -31,6 +31,7 @@ class PartnerFactory extends Factory
             'province' => fake()->randomElement($provinces),
             'postal_code' => fake()->optional()->postcode(),
             'country' => 'Indonesia',
+            'gmap_url' => fake()->optional()->url(),
             'website' => fake()->optional()->url(),
             'notes' => fake()->optional()->sentence(),
         ];

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import HeadingFormSection from '@/components/HeadingFormSection.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,26 +13,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import type { Partner } from '@/types/models';
 import { useForm } from '@inertiajs/vue3';
 import { computed, watch } from 'vue';
-
-interface Partner {
-    id: number;
-    code: string;
-    type: string;
-    name: string;
-    email: string | null;
-    phone: string | null;
-    mobile_phone: string | null;
-    address_line_1: string | null;
-    address_line_2: string | null;
-    city: string | null;
-    province: string | null;
-    postal_code: string | null;
-    country: string | null;
-    website: string | null;
-    notes: string | null;
-}
 
 interface Props {
     open: boolean | Partner;
@@ -70,6 +54,7 @@ const form = useForm({
     province: props.partner?.province || '',
     postal_code: props.partner?.postal_code || '',
     country: props.partner?.country || 'Indonesia',
+    gmap_url: props.partner?.gmap_url || '',
     website: props.partner?.website || '',
     notes: props.partner?.notes || '',
 });
@@ -108,6 +93,7 @@ watch(
             form.province = props.partner.province || '';
             form.postal_code = props.partner.postal_code || '';
             form.country = props.partner.country || 'Indonesia';
+            form.gmap_url = props.partner.gmap_url || '';
             form.website = props.partner.website || '';
             form.notes = props.partner.notes || '';
         } else if (!value) {
@@ -136,7 +122,7 @@ watch(
             <form @submit.prevent="submit" class="space-y-6">
                 <!-- Basic Information -->
                 <div class="space-y-4">
-                    <h3 class="text-sm font-semibold">Basic Information</h3>
+                    <HeadingFormSection title="Basic Information" />
 
                     <div class="grid gap-4 sm:grid-cols-2">
                         <div class="grid gap-2">
@@ -228,7 +214,7 @@ watch(
 
                 <!-- Address Information -->
                 <div class="space-y-4">
-                    <h3 class="text-sm font-semibold">Address</h3>
+                    <HeadingFormSection title="Address" />
 
                     <div class="grid gap-2">
                         <Label for="address_line_1">Address Line 1</Label>
@@ -293,13 +279,22 @@ watch(
                             <InputError :message="form.errors.country" />
                         </div>
                     </div>
+
+                    <div class="grid gap-2">
+                        <Label for="gmap_url">Google Maps URL</Label>
+                        <Input
+                            id="gmap_url"
+                            v-model="form.gmap_url"
+                            type="url"
+                            placeholder="https://www.google.com/maps/place/..."
+                        />
+                        <InputError :message="form.errors.gmap_url" />
+                    </div>
                 </div>
 
                 <!-- Additional Information -->
                 <div class="space-y-4">
-                    <h3 class="text-sm font-semibold">
-                        Additional Information
-                    </h3>
+                    <HeadingFormSection title="Additional Information" />
 
                     <div class="grid gap-2">
                         <Label for="website">Website</Label>

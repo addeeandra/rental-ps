@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('province')->nullable();
             $table->string('postal_code')->nullable();
             $table->string('country')->nullable();
+            $table->string('gmap_url')->nullable();
             $table->string('website')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();

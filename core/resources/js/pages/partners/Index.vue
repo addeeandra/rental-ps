@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '@/components/Icon.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +19,8 @@ import { Input } from '@/components/ui/input';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { debounce } from '@/lib/utils';
 import type { BreadcrumbItem } from '@/types';
+import { PaginatedData } from '@/types/laravel';
+import type { Partner } from '@/types/models';
 import { Head, router } from '@inertiajs/vue3';
 import { Download, MoreVertical, Plus, Search, Upload } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
@@ -25,31 +28,8 @@ import DeletePartnerDialog from './DeletePartnerDialog.vue';
 import ImportPartnersDialog from './ImportPartnersDialog.vue';
 import PartnerFormDialog from './PartnerFormDialog.vue';
 
-interface Partner {
-    id: number;
-    code: string;
-    type: string;
-    name: string;
-    email: string | null;
-    phone: string | null;
-    mobile_phone: string | null;
-    address_line_1: string | null;
-    address_line_2: string | null;
-    city: string | null;
-    province: string | null;
-    postal_code: string | null;
-    country: string | null;
-    website: string | null;
-    notes: string | null;
-    created_at: string;
-}
-
 interface Props {
-    partners: {
-        data: Partner[];
-        links: any[];
-        meta: any;
-    };
+    partners: PaginatedData<Partner>;
     filters: {
         search?: string;
         type?: string;
@@ -140,7 +120,7 @@ function downloadTemplate() {
                         Manage your business partners, clients, and suppliers.
                     </p>
                 </div>
-                <div class="flex gap-2">
+                <div class="flex flex-col gap-2 md:flex-row">
                     <Button
                         variant="outline"
                         size="sm"
@@ -178,7 +158,7 @@ function downloadTemplate() {
                 </div>
                 <select
                     v-model="selectedType"
-                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:w-[180px]"
+                    class="flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none sm:w-[180px]"
                 >
                     <option value="">All Types</option>
                     <option value="Client">Client</option>
@@ -241,12 +221,14 @@ function downloadTemplate() {
                             v-if="partner.email"
                             class="flex items-center gap-2 text-muted-foreground"
                         >
+                            <Icon name="Mail" color="#a0a0a0" />
                             <span class="truncate">{{ partner.email }}</span>
                         </div>
                         <div
                             v-if="partner.phone || partner.mobile_phone"
                             class="flex items-center gap-2 text-muted-foreground"
                         >
+                            <Icon name="Smartphone" color="#a0a0a0" />
                             <span>{{
                                 partner.mobile_phone || partner.phone
                             }}</span>
@@ -255,6 +237,7 @@ function downloadTemplate() {
                             v-if="partner.city"
                             class="flex items-center gap-2 text-muted-foreground"
                         >
+                            <Icon name="MapPinHouse" color="#a0a0a0" />
                             <span
                                 >{{ partner.city
                                 }}<span v-if="partner.province"
@@ -300,7 +283,7 @@ function downloadTemplate() {
             <!-- Pagination -->
             <div
                 v-if="partners.data.length > 0"
-                class="flex items-center justify-center gap-2"
+                class="hidden items-center justify-end gap-2 sm:flex"
             >
                 <Button
                     v-for="(link, index) in partners.links"
@@ -311,6 +294,49 @@ function downloadTemplate() {
                     @click="link.url && router.visit(link.url)"
                 >
                     <span v-html="link.label" />
+                </Button>
+            </div>
+
+            <!-- Mobile Pagination -->
+            <div
+                v-if="partners.data.length > 0"
+                class="flex items-center justify-end gap-2 sm:hidden"
+            >
+                <Button
+                    :key="0"
+                    :variant="partners.links[0].active ? 'default' : 'outline'"
+                    size="sm"
+                    :disabled="!partners.links[0].url"
+                    @click="
+                        partners.links[0].url &&
+                        router.visit(partners.links[0].url)
+                    "
+                >
+                    <span v-html="partners.links[0].label" />
+                </Button>
+                <Button
+                    :key="partners.links.length - 1"
+                    :variant="
+                        partners.links[partners.links.length - 1].active
+                            ? 'default'
+                            : 'outline'
+                    "
+                    size="sm"
+                    :disabled="!partners.links[partners.links.length - 1].url"
+                    @click="
+                        () => {
+                            let url =
+                                partners.links[partners.links.length - 1].url;
+
+                            if (url !== null) {
+                                router.visit(url);
+                            }
+                        }
+                    "
+                >
+                    <span
+                        v-html="partners.links[partners.links.length - 1].label"
+                    />
                 </Button>
             </div>
         </div>
