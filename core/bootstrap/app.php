@@ -24,7 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->trustProxies(at: [
             '192.168.1.1',
-            '172.0.0.0/8',
+            '172.0.0.0/24',
             '10.0.0.0/8',
         ]);
     })
