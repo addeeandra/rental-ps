@@ -2,9 +2,11 @@ ARG PHP_VERSION=8.3
 
 FROM ghcr.io/digital-entropy/dokar-php/octane:${PHP_VERSION}
 
-# opcache & xdebug
+# opcache, xdebug & nodejs
 RUN apt-get update \
-    && apt-get install -y php8.3-opcache php8.3-xdebug
+    && apt-get install -y php8.3-opcache php8.3-xdebug curl gnupg \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && apt-get install -y nodejs
 
 # cleanup
 RUN apt-get autoremove -y \
