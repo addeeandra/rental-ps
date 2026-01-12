@@ -33,14 +33,14 @@ else
 fi
 
 if "$ALWAYS_BUILD" == "true"; then
-    echo "Running pnpm install and build..."
-    pnpm install
-    pnpm build
+    echo "Running npm install and build..."
+    npm install
+    npm run build
 else
     if [ -d node_modules ]; then
         echo "node_modules ok!"
     else
-        pnpm install
+        npm install
     fi
 fi
 
