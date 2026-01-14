@@ -30,6 +30,8 @@ interface Props {
     invoice?: Invoice | null;
     partners: Partner[];
     products: Product[];
+    defaultInvoiceTerms?: string | null;
+    defaultInvoiceNotes?: string | null;
 }
 
 const props = defineProps<Props>();
@@ -176,8 +178,8 @@ onMounted(() => {
         form.rental_end_date = '';
         form.delivery_time = '09:00';
         form.return_time = '17:00';
-        form.notes = '';
-        form.terms = '';
+        form.notes = props.defaultInvoiceNotes || '';
+        form.terms = props.defaultInvoiceTerms || '';
         form.discount_amount = '0';
         form.tax_amount = '0';
         form.shipping_fee = '0';

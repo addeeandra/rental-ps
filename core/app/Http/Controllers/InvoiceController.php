@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Requests\UpdateInvoicePaymentRequest;
+use App\Models\CompanySetting;
 use App\Models\Invoice;
 use App\Models\Partner;
 use App\Models\Product;
@@ -59,6 +60,8 @@ class InvoiceController extends Controller
             ];
         });
 
+        $settings = CompanySetting::current();
+
         return Inertia::render('invoices/Index', [
             'invoices' => $invoices,
             'partners' => Partner::select('id', 'name', 'code', 'type')
@@ -69,6 +72,8 @@ class InvoiceController extends Controller
                 ->whereNull('deleted_at')
                 ->orderBy('name')
                 ->get(),
+            'defaultInvoiceTerms' => $settings->invoice_default_terms,
+            'defaultInvoiceNotes' => $settings->invoice_default_notes,
             'filters' => [
                 'search' => $search,
                 'status' => $status,
@@ -137,6 +142,7 @@ class InvoiceController extends Controller
     public function edit(Invoice $invoice): InertiaResponse
     {
         $invoice->load(['partner', 'invoiceItems.product', 'user']);
+        $settings = CompanySetting::current();
 
         return Inertia::render('invoices/Edit', [
             'invoice' => [
@@ -153,6 +159,8 @@ class InvoiceController extends Controller
                 ->whereNull('deleted_at')
                 ->orderBy('name')
                 ->get(),
+            'defaultInvoiceTerms' => $settings->invoice_default_terms,
+            'defaultInvoiceNotes' => $settings->invoice_default_notes,
         ]);
     }
 
@@ -259,8 +267,9 @@ class InvoiceController extends Controller
     public function preview(Invoice $invoice): Response
     {
         $invoice->load(['partner', 'invoiceItems.product', 'user']);
+        $settings = CompanySetting::current();
         
-        $pdf = Pdf::loadView('invoices.pdf', compact('invoice'));
+        $pdf = Pdf::loadView('invoices.pdf', compact('invoice', 'settings'));
         
         return $pdf->stream('Invoice-' . $invoice->invoice_number . '.pdf');
     }
@@ -271,7 +280,8 @@ class InvoiceController extends Controller
     public function previewHtml(Invoice $invoice): \Illuminate\View\View
     {
         $invoice->load(['partner', 'invoiceItems.product', 'user']);
+        $settings = CompanySetting::current();
         
-        return view('invoices.pdf', compact('invoice'));
+        return view('invoices.pdf', compact('invoice', 'settings'));
     }
 }

@@ -19,6 +19,25 @@ export interface Partner {
     created_at: string;
 }
 
+export interface CompanySetting {
+    id: number;
+    company_name: string;
+    email: string | null;
+    phone: string | null;
+    address: string | null;
+    city: string | null;
+    postal_code: string | null;
+    website: string | null;
+    logo_path: string | null;
+    logo_url: string | null;
+    tax_number: string | null;
+    invoice_number_prefix: string;
+    invoice_default_terms: string | null;
+    invoice_default_notes: string | null;
+    created_at: string;
+    updated_at: string;
+}
+
 export interface Category {
     id: number;
     code: string;

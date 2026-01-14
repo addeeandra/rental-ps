@@ -33,6 +33,8 @@ interface Props {
     invoiceSelected: Invoice | null;
     partners: Partner[];
     products: Product[];
+    defaultInvoiceTerms?: string | null;
+    defaultInvoiceNotes?: string | null;
     filters: {
         search?: string;
         status?: InvoiceStatus;
@@ -349,6 +351,8 @@ function openPreviewHtml(invoice: Invoice) {
             v-model:open="showCreateDialog"
             :partners="partners"
             :products="products"
+            :default-invoice-terms="defaultInvoiceTerms"
+            :default-invoice-notes="defaultInvoiceNotes"
             @success="showCreateDialog = false"
         />
 

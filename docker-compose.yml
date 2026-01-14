@@ -9,6 +9,10 @@ services:
       - db_data:/var/lib/postgresql/data
     ports:
       - "5432:5432" 
+  redis:
+    image: redis:alpine3.22
+    ports:
+      - "6379:6379"
   mailpit:
     image: axllent/mailpit:latest
     ports:

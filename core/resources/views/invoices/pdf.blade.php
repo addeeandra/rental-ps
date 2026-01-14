@@ -269,17 +269,28 @@
         <!-- Header -->
         <div class="header">
             <div class="header-left">
-                @if(config('invoice.logo_path'))
-                    <img src="{{ public_path(config('invoice.logo_path')) }}" alt="Company Logo" class="logo">
+                @if($settings->logo_path)
+                    <img src="{{ public_path('storage/' . $settings->logo_path) }}" alt="Company Logo" class="logo">
                 @endif
-                <div class="company-name">{{ config('invoice.company_name') }}</div>
+                <div class="company-name">{{ $settings->company_name }}</div>
                 <div class="company-info">
-                    {{ config('invoice.address') }}<br>
-                    {{ config('invoice.city') }} {{ config('invoice.postal_code') }}<br>
-                    Phone: {{ config('invoice.phone') }}<br>
-                    Email: {{ config('invoice.email') }}
-                    @if(config('invoice.website'))
-                        <br>{{ config('invoice.website') }}
+                    @if($settings->address)
+                        {{ $settings->address }}<br>
+                    @endif
+                    @if($settings->city || $settings->postal_code)
+                        {{ $settings->city }} {{ $settings->postal_code }}<br>
+                    @endif
+                    @if($settings->phone)
+                        Phone: {{ $settings->phone }}<br>
+                    @endif
+                    @if($settings->email)
+                        Email: {{ $settings->email }}<br>
+                    @endif
+                    @if($settings->website)
+                        {{ $settings->website }}<br>
+                    @endif
+                    @if($settings->tax_number)
+                        Tax ID: {{ $settings->tax_number }}
                     @endif
                 </div>
             </div>

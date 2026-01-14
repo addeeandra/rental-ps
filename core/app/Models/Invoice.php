@@ -94,7 +94,8 @@ class Invoice extends Model
             try {
                 return DB::transaction(function () {
                     $year = date('Y');
-                    $prefix = "INV-{$year}-";
+                    $prefixCode = CompanySetting::current()->invoice_number_prefix;
+                    $prefix = "{$prefixCode}-{$year}-";
 
                     $lastInvoice = static::withTrashed()
                         ->where('invoice_number', 'like', "{$prefix}%")
