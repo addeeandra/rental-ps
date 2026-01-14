@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\ProductController;
@@ -16,9 +17,9 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard', [DashboardController::class, 'overview'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard/financial', [DashboardController::class, 'financial'])->middleware(['auth', 'verified'])->name('dashboard.financial');
+Route::get('dashboard/operations', [DashboardController::class, 'operations'])->middleware(['auth', 'verified'])->name('dashboard.operations');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Redirect old partners route to customers

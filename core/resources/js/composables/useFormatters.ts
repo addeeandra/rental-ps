@@ -45,3 +45,21 @@ export function formatNumber(value: number, decimals: number = 2): string {
     maximumFractionDigits: decimals,
   }).format(value);
 }
+
+export function formatCurrencyCompact(value: number): string {
+  if (value >= 1_000_000_000) {
+    return `Rp ${(value / 1_000_000_000).toFixed(1)}B`;
+  }
+  if (value >= 1_000_000) {
+    return `Rp ${(value / 1_000_000).toFixed(1)}M`;
+  }
+  if (value >= 1_000) {
+    return `Rp ${(value / 1_000).toFixed(1)}K`;
+  }
+  return formatCurrency(value);
+}
+
+export function formatPercentage(value: number, decimals: number = 1): string {
+  const sign = value > 0 ? '+' : '';
+  return `${sign}${value.toFixed(decimals)}%`;
+}

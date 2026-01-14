@@ -202,6 +202,9 @@ watch(
                                 placeholder="0"
                             />
                             <InputError :message="form.errors.sales_price" />
+                            <span class="text-xs text-gray-500"
+                                >Wajib isi apabila produk untuk dijual</span
+                            >
                         </div>
 
                         <div class="grid gap-2">
@@ -219,6 +222,10 @@ watch(
                                 placeholder="0"
                             />
                             <InputError :message="form.errors.rental_price" />
+                            <span class="text-xs text-gray-500"
+                                >Wajib diisi apabila produk untuk
+                                disewakan</span
+                            >
                         </div>
                     </div>
 

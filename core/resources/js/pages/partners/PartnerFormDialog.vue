@@ -225,27 +225,27 @@ watch(
                                 </option>
                             </select>
                             <InputError :message="form.errors.type" />
+                        </div>
 
-                            <!-- Type Change Warning -->
-                            <div
-                                v-if="typeChangeWarning"
-                                :class="[
-                                    'flex items-start gap-2 rounded-md p-3 text-sm',
-                                    typeChangeWarning.type === 'info'
-                                        ? 'bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200'
-                                        : 'bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-200',
-                                ]"
-                            >
-                                <Info
-                                    v-if="typeChangeWarning.type === 'info'"
-                                    class="mt-0.5 h-4 w-4 flex-shrink-0"
-                                />
-                                <AlertCircle
-                                    v-else
-                                    class="mt-0.5 h-4 w-4 flex-shrink-0"
-                                />
-                                <span>{{ typeChangeWarning.message }}</span>
-                            </div>
+                        <!-- Type Change Warning -->
+                        <div
+                            v-if="typeChangeWarning"
+                            :class="[
+                                'col-span-2 flex items-start gap-2 rounded-md p-3 text-sm',
+                                typeChangeWarning.type === 'info'
+                                    ? 'bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200'
+                                    : 'bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-200',
+                            ]"
+                        >
+                            <Info
+                                v-if="typeChangeWarning.type === 'info'"
+                                class="mt-0.5 h-4 w-4 flex-shrink-0"
+                            />
+                            <AlertCircle
+                                v-else
+                                class="mt-0.5 h-4 w-4 flex-shrink-0"
+                            />
+                            <span>{{ typeChangeWarning.message }}</span>
                         </div>
                     </div>
 
