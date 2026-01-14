@@ -61,7 +61,10 @@ class InvoiceController extends Controller
 
         return Inertia::render('invoices/Index', [
             'invoices' => $invoices,
-            'partners' => Partner::select('id', 'name', 'code')->orderBy('name')->get(),
+            'partners' => Partner::select('id', 'name', 'code', 'type')
+                ->whereIn('type', ['Client', 'Supplier & Client'])
+                ->orderBy('name')
+                ->get(),
             'products' => Product::select('id', 'name', 'code', 'sales_price', 'rental_price')
                 ->whereNull('deleted_at')
                 ->orderBy('name')
@@ -142,7 +145,10 @@ class InvoiceController extends Controller
                 'is_editable' => $invoice->is_editable,
                 'rental_days' => $invoice->rental_days,
             ],
-            'partners' => Partner::select('id', 'name', 'code')->orderBy('name')->get(),
+            'partners' => Partner::select('id', 'name', 'code', 'type')
+                ->whereIn('type', ['Client', 'Supplier & Client'])
+                ->orderBy('name')
+                ->get(),
             'products' => Product::select('id', 'name', 'code', 'sales_price', 'rental_price')
                 ->whereNull('deleted_at')
                 ->orderBy('name')

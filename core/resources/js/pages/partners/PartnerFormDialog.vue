@@ -15,14 +15,20 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { Partner } from '@/types/models';
 import { useForm } from '@inertiajs/vue3';
-import { computed, watch } from 'vue';
+import { AlertCircle, Info } from 'lucide-vue-next';
+import { computed, ref, watch } from 'vue';
 
 interface Props {
     open: boolean | Partner;
     partner?: Partner | null;
+    defaultType?: 'Client' | 'Supplier';
+    context?: 'customers' | 'suppliers';
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+    defaultType: 'Client',
+    context: 'customers',
+});
 const emit = defineEmits<{
     'update:open': [value: boolean];
     success: [];
@@ -41,9 +47,11 @@ const isOpen = computed({
 
 const isEditing = computed(() => !!props.partner);
 
+const initialType = ref(props.partner?.type || props.defaultType);
+
 const form = useForm({
     code: props.partner?.code || '',
-    type: props.partner?.type || 'Client',
+    type: props.partner?.type || props.defaultType,
     name: props.partner?.name || '',
     email: props.partner?.email || '',
     phone: props.partner?.phone || '',
@@ -59,16 +67,64 @@ const form = useForm({
     notes: props.partner?.notes || '',
 });
 
+// Computed property to determine type change warning
+const typeChangeWarning = computed(() => {
+    const currentType = form.type;
+    const initial = initialType.value;
+
+    // No warning if type hasn't changed
+    if (currentType === initial) {
+        return null;
+    }
+
+    if (currentType === 'Supplier & Client') {
+        return {
+            type: 'info',
+            message:
+                'This partner will appear in both Customers and Suppliers lists.',
+        };
+    }
+
+    if (props.context === 'customers') {
+        if (currentType === 'Supplier') {
+            return {
+                type: 'warning',
+                message:
+                    'This customer will be moved to the Suppliers list and removed from Customers.',
+            };
+        }
+    } else if (props.context === 'suppliers') {
+        if (currentType === 'Client') {
+            return {
+                type: 'warning',
+                message:
+                    'This supplier will be moved to the Customers list and removed from Suppliers.',
+            };
+        }
+    }
+
+    return null;
+});
+
+const submitRoute = computed(() => {
+    if (isEditing.value && props.partner) {
+        return props.context === 'suppliers'
+            ? `/suppliers/${props.partner.id}`
+            : `/customers/${props.partner.id}`;
+    }
+    return props.context === 'suppliers' ? '/suppliers' : '/customers';
+});
+
 function submit() {
     if (isEditing.value && props.partner) {
-        form.patch(`/partners/${props.partner.id}`, {
+        form.patch(submitRoute.value, {
             onSuccess: () => {
                 emit('success');
                 form.reset();
             },
         });
     } else {
-        form.post('/partners', {
+        form.post(submitRoute.value, {
             onSuccess: () => {
                 emit('success');
                 form.reset();
@@ -81,6 +137,7 @@ watch(
     () => props.open,
     (value) => {
         if (value && props.partner) {
+            initialType.value = props.partner.type;
             form.code = props.partner.code;
             form.type = props.partner.type;
             form.name = props.partner.name;
@@ -96,7 +153,13 @@ watch(
             form.gmap_url = props.partner.gmap_url || '';
             form.website = props.partner.website || '';
             form.notes = props.partner.notes || '';
-        } else if (!value) {
+        } else if (value) {
+            // Reset to default type when opening create dialog
+            initialType.value = props.defaultType;
+            form.type = props.defaultType;
+        }
+
+        if (!value) {
             form.reset();
         }
     },
@@ -162,6 +225,27 @@ watch(
                                 </option>
                             </select>
                             <InputError :message="form.errors.type" />
+
+                            <!-- Type Change Warning -->
+                            <div
+                                v-if="typeChangeWarning"
+                                :class="[
+                                    'flex items-start gap-2 rounded-md p-3 text-sm',
+                                    typeChangeWarning.type === 'info'
+                                        ? 'bg-blue-50 text-blue-800 dark:bg-blue-950 dark:text-blue-200'
+                                        : 'bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-200',
+                                ]"
+                            >
+                                <Info
+                                    v-if="typeChangeWarning.type === 'info'"
+                                    class="mt-0.5 h-4 w-4 flex-shrink-0"
+                                />
+                                <AlertCircle
+                                    v-else
+                                    class="mt-0.5 h-4 w-4 flex-shrink-0"
+                                />
+                                <span>{{ typeChangeWarning.message }}</span>
+                            </div>
                         </div>
                     </div>
 

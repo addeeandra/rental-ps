@@ -26,9 +26,12 @@ import { computed, ref } from 'vue';
 
 interface Props {
     open: boolean;
+    importUrl?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+    importUrl: '/partners/import',
+});
 const emit = defineEmits<{
     'update:open': [value: boolean];
     success: [];
@@ -72,7 +75,7 @@ async function handleImport() {
     formData.append('file', selectedFile.value);
 
     try {
-        const response = await fetch('/partners/import', {
+        const response = await fetch(props.importUrl, {
             method: 'POST',
             body: formData,
             headers: {

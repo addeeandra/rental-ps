@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PartnerController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -19,9 +21,16 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('partners', PartnerController::class)->except(['show', 'create', 'edit']);
-    Route::get('partners/template', [PartnerController::class, 'downloadTemplate'])->name('partners.template');
-    Route::post('partners/import', [PartnerController::class, 'import'])->name('partners.import');
+    // Redirect old partners route to customers
+    Route::get('partners', fn() => redirect()->route('customers.index'));
+    
+    Route::resource('customers', CustomerController::class)->except(['create', 'edit']);
+    Route::get('customers/template', [CustomerController::class, 'downloadTemplate'])->name('customers.template');
+    Route::post('customers/import', [CustomerController::class, 'import'])->name('customers.import');
+
+    Route::resource('suppliers', SupplierController::class)->except(['create', 'edit']);
+    Route::get('suppliers/template', [SupplierController::class, 'downloadTemplate'])->name('suppliers.template');
+    Route::post('suppliers/import', [SupplierController::class, 'import'])->name('suppliers.import');
 
     Route::resource('categories', CategoryController::class)->except(['show', 'create', 'edit']);
     Route::get('categories/template', [CategoryController::class, 'downloadTemplate'])->name('categories.template');

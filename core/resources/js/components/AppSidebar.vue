@@ -17,23 +17,38 @@ import { Link } from '@inertiajs/vue3';
 import {
     BookOpen,
     FileBox,
-    Folder,
     LayoutGrid,
     Package,
     Tags,
+    Truck,
+    Users,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
+    {
+        group: 'Platform',
+    },
     {
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
     },
     {
-        title: 'Partners',
-        href: '/partners',
-        icon: Folder,
+        group: 'Contacts',
+    },
+    {
+        title: 'Customers',
+        href: '/customers',
+        icon: Users,
+    },
+    {
+        title: 'Suppliers',
+        href: '/suppliers',
+        icon: Truck,
+    },
+    {
+        group: 'Inventories',
     },
     {
         title: 'Categories',
@@ -44,6 +59,9 @@ const mainNavItems: NavItem[] = [
         title: 'Products',
         href: '/products',
         icon: Package,
+    },
+    {
+        group: 'Orders',
     },
     {
         title: 'Invoices',

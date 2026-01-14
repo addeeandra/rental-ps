@@ -21,9 +21,12 @@ interface Partner {
 interface Props {
     open: boolean | Partner;
     partner: Partner;
+    deleteRoute?: string;
 }
 
-const props = defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+    deleteRoute: 'partners.destroy',
+});
 const emit = defineEmits<{
     'update:open': [value: boolean];
     success: [];
@@ -47,7 +50,7 @@ function handleDelete() {
 
     isDeleting.value = true;
 
-    router.delete(`/partners/${props.partner.id}`, {
+    router.delete(route(props.deleteRoute, props.partner.id), {
         onSuccess: () => {
             emit('success');
             isDeleting.value = false;
