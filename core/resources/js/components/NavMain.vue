@@ -52,7 +52,7 @@ const groupedItems = computed(() => {
                             :is-active="urlIsActive(item.href)"
                             :tooltip="item.title"
                         >
-                            <Link :href="item.href">
+                            <Link :href="item.href" prefetch>
                                 <component :is="item.icon" />
                                 <span>{{ item.title }}</span>
                             </Link>
