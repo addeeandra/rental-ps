@@ -16,7 +16,7 @@ import type { OrderType, Partner } from '@/types/models';
 import type { InertiaForm } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
 import { Plus } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 interface Props {
     form: InertiaForm<{
@@ -28,6 +28,7 @@ interface Props {
         order_type: OrderType;
         rental_start_date: string;
         rental_end_date: string;
+        rental_duration: number;
         delivery_time: string;
         return_time: string;
         notes: string;
@@ -37,13 +38,45 @@ interface Props {
     timeOptions: string[];
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
 
 const showPartnerDialog = ref(false);
 
 function handlePartnerCreated() {
     router.reload({ only: ['partners'] });
 }
+
+// Auto-calculate rental end date when start date or duration changes
+watch(
+    () => [props.form.rental_start_date, props.form.rental_duration],
+    ([startDate, duration]) => {
+        if (startDate && duration && Number(duration) > 0) {
+            const start = new Date(startDate);
+            const end = new Date(start);
+            end.setDate(end.getDate() + Number(duration));
+            props.form.rental_end_date = end.toISOString().split('T')[0];
+        }
+    },
+);
+
+// Computed property to display formatted end date
+const calculatedEndDate = computed(() => {
+    if (
+        props.form.rental_start_date &&
+        props.form.rental_duration &&
+        props.form.rental_duration > 0
+    ) {
+        const start = new Date(props.form.rental_start_date);
+        const end = new Date(start);
+        end.setDate(end.getDate() + Number(props.form.rental_duration));
+        return end.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+    }
+    return null;
+});
 </script>
 
 <template>
@@ -157,15 +190,15 @@ function handlePartnerCreated() {
             <Label>Order Type *</Label>
             <RadioGroup v-model="form.order_type" class="flex gap-4">
                 <div class="flex items-center space-x-2">
-                    <RadioGroupItem value="sales" id="sales" />
-                    <Label for="sales" class="cursor-pointer font-normal"
-                        >Sales</Label
-                    >
-                </div>
-                <div class="flex items-center space-x-2">
                     <RadioGroupItem value="rental" id="rental" />
                     <Label for="rental" class="cursor-pointer font-normal"
                         >Rental</Label
+                    >
+                </div>
+                <div class="flex items-center space-x-2">
+                    <RadioGroupItem value="sales" id="sales" />
+                    <Label for="sales" class="cursor-pointer font-normal"
+                        >Sales</Label
                     >
                 </div>
             </RadioGroup>
@@ -197,20 +230,31 @@ function handlePartnerCreated() {
                 </div>
 
                 <div class="space-y-2">
-                    <Label for="rental_end_date">Rental End Date *</Label>
+                    <Label for="rental_duration"
+                        >Rental Duration (Days) *</Label
+                    >
                     <Input
-                        id="rental_end_date"
-                        v-model="form.rental_end_date"
-                        type="date"
+                        id="rental_duration"
+                        v-model.number="form.rental_duration"
+                        type="number"
+                        min="1"
+                        step="1"
+                        placeholder="Number of days"
                         :class="{
-                            'border-destructive': form.errors.rental_end_date,
+                            'border-destructive': form.errors.rental_duration,
                         }"
                     />
                     <p
-                        v-if="form.errors.rental_end_date"
+                        v-if="form.errors.rental_duration"
                         class="text-sm text-destructive"
                     >
-                        {{ form.errors.rental_end_date }}
+                        {{ form.errors.rental_duration }}
+                    </p>
+                    <p
+                        v-if="calculatedEndDate"
+                        class="text-xs text-muted-foreground"
+                    >
+                        End date: {{ calculatedEndDate }}
                     </p>
                 </div>
 
@@ -240,35 +284,6 @@ function handlePartnerCreated() {
                         class="text-sm text-destructive"
                     >
                         {{ form.errors.delivery_time }}
-                    </p>
-                </div>
-
-                <div class="space-y-2">
-                    <Label for="return_time">Return Time *</Label>
-                    <Select v-model="form.return_time">
-                        <SelectTrigger
-                            id="return_time"
-                            :class="{
-                                'border-destructive': form.errors.return_time,
-                            }"
-                        >
-                            <SelectValue placeholder="Select time" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem
-                                v-for="time in timeOptions"
-                                :key="time"
-                                :value="time"
-                            >
-                                {{ time }}
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <p
-                        v-if="form.errors.return_time"
-                        class="text-sm text-destructive"
-                    >
-                        {{ form.errors.return_time }}
                     </p>
                 </div>
             </div>

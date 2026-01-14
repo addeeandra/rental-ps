@@ -13,23 +13,43 @@ import { formatCurrency } from '@/composables/useFormatters';
 import type { OrderType, Product } from '@/types/models';
 import type { InertiaForm } from '@inertiajs/vue3';
 import { Plus, Trash2 } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 interface LineItem {
     product_id: number | null;
     description: string;
     quantity: number;
     unit_price: number;
+    total: number;
 }
 
 interface Props {
     form: InertiaForm<{
         line_items: LineItem[];
         order_type: OrderType;
+        rental_duration?: number;
     }>;
     products: Product[];
 }
 
 const props = defineProps<Props>();
+
+// Calculate the multiplier based on order type and rental duration
+const rentalMultiplier = computed(() => {
+    if (
+        props.form.order_type === 'rental' &&
+        props.form.rental_duration &&
+        props.form.rental_duration > 0
+    ) {
+        return props.form.rental_duration;
+    }
+    return 1;
+});
+
+// Calculate line item total with rental duration consideration
+function calculateLineTotal(item: LineItem): number {
+    return item.quantity * item.unit_price * rentalMultiplier.value;
+}
 
 function addLineItem() {
     props.form.line_items.push({
@@ -37,6 +57,7 @@ function addLineItem() {
         description: '',
         quantity: 1,
         unit_price: 0,
+        total: 0,
     });
 }
 
@@ -57,6 +78,7 @@ function onProductChange(index: number) {
                 props.form.order_type === 'sales'
                     ? product.sales_price
                     : product.rental_price;
+            item.total = calculateLineTotal(item);
         }
     }
 }
@@ -81,7 +103,7 @@ function onProductChange(index: number) {
             <div
                 v-for="(item, index) in form.line_items"
                 :key="index"
-                class="grid gap-3 rounded-lg border p-3 md:grid-cols-[1fr,1fr,100px,120px,40px]"
+                class="grid gap-3 rounded-lg border-b p-1.5 md:grid-cols-[1fr,1fr,100px,120px,40px]"
             >
                 <div class="space-y-1">
                     <Label class="text-xs">Product</Label>
@@ -89,7 +111,7 @@ function onProductChange(index: number) {
                         v-model="item.product_id"
                         @update:model-value="onProductChange(index)"
                     >
-                        <SelectTrigger class="h-9">
+                        <SelectTrigger class="h-9 w-full min-w-[320px]">
                             <SelectValue placeholder="Select or enter custom" />
                         </SelectTrigger>
                         <SelectContent>
@@ -152,8 +174,26 @@ function onProductChange(index: number) {
                 <div
                     class="text-right text-sm text-muted-foreground md:col-span-5"
                 >
-                    Total:
-                    {{ formatCurrency(item.quantity * item.unit_price) }}
+                    <span
+                        v-if="
+                            form.order_type === 'rental' && rentalMultiplier > 1
+                        "
+                        class="mr-2 text-xs text-muted-foreground"
+                    >
+                        ({{ item.quantity }} ×
+                        {{ formatCurrency(item.unit_price) }} ×
+                        {{ rentalMultiplier }} days)
+                    </span>
+                    <span class="font-medium">
+                        Total:
+                        {{
+                            formatCurrency(
+                                item.quantity *
+                                    item.unit_price *
+                                    rentalMultiplier,
+                            )
+                        }}
+                    </span>
                 </div>
             </div>
         </div>

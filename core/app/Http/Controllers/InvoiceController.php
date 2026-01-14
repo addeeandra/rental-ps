@@ -10,6 +10,7 @@ use App\Models\Invoice;
 use App\Models\Partner;
 use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -91,6 +92,13 @@ class InvoiceController extends Controller
             DB::transaction(function () use ($request) {
                 $data = $request->validated();
                 
+                // Calculate rental_end_date if rental order
+                $rentalEndDate = null;
+                if ($data['order_type'] === 'rental' && isset($data['rental_start_date']) && isset($data['rental_duration'])) {
+                    $startDate = Carbon::parse($data['rental_start_date']);
+                    $rentalEndDate = $startDate->copy()->addDays($data['rental_duration'])->format('Y-m-d');
+                }
+                
                 // Create invoice
                 $invoice = Invoice::create([
                     'partner_id' => $data['partner_id'],
@@ -99,9 +107,9 @@ class InvoiceController extends Controller
                     'due_date' => $data['due_date'],
                     'order_type' => $data['order_type'],
                     'rental_start_date' => $data['rental_start_date'] ?? null,
-                    'rental_end_date' => $data['rental_end_date'] ?? null,
+                    'rental_end_date' => $rentalEndDate,
                     'delivery_time' => $data['delivery_time'] ?? null,
-                    'return_time' => $data['return_time'] ?? null,
+                    'return_time' => $data['delivery_time'] ?? null,
                     'notes' => $data['notes'] ?? null,
                     'terms' => $data['terms'] ?? null,
                     'discount_amount' => $data['discount_amount'] ?? 0,
@@ -112,6 +120,11 @@ class InvoiceController extends Controller
                     'total_amount' => 0,
                 ]);
 
+                // Calculate rental multiplier for pricing
+                $rentalMultiplier = ($data['order_type'] === 'rental' && isset($data['rental_duration'])) 
+                    ? $data['rental_duration'] 
+                    : 1;
+
                 // Create invoice items
                 foreach ($data['line_items'] as $index => $item) {
                     $invoice->invoiceItems()->create([
@@ -119,7 +132,7 @@ class InvoiceController extends Controller
                         'description' => $item['description'],
                         'quantity' => $item['quantity'],
                         'unit_price' => $item['unit_price'],
-                        'total' => $item['quantity'] * $item['unit_price'],
+                        'total' => $item['quantity'] * $item['unit_price'] * $rentalMultiplier,
                         'sort_order' => $index,
                     ]);
                 }
@@ -177,6 +190,13 @@ class InvoiceController extends Controller
             DB::transaction(function () use ($request, $invoice) {
                 $data = $request->validated();
                 
+                // Calculate rental_end_date if rental order
+                $rentalEndDate = null;
+                if ($data['order_type'] === 'rental' && isset($data['rental_start_date']) && isset($data['rental_duration'])) {
+                    $startDate = Carbon::parse($data['rental_start_date']);
+                    $rentalEndDate = $startDate->copy()->addDays($data['rental_duration'])->format('Y-m-d');
+                }
+                
                 // Update invoice
                 $invoice->update([
                     'partner_id' => $data['partner_id'],
@@ -185,15 +205,20 @@ class InvoiceController extends Controller
                     'due_date' => $data['due_date'],
                     'order_type' => $data['order_type'],
                     'rental_start_date' => $data['rental_start_date'] ?? null,
-                    'rental_end_date' => $data['rental_end_date'] ?? null,
+                    'rental_end_date' => $rentalEndDate,
                     'delivery_time' => $data['delivery_time'] ?? null,
-                    'return_time' => $data['return_time'] ?? null,
+                    'return_time' => $data['delivery_time'] ?? null,
                     'notes' => $data['notes'] ?? null,
                     'terms' => $data['terms'] ?? null,
                     'discount_amount' => $data['discount_amount'] ?? 0,
                     'tax_amount' => $data['tax_amount'] ?? 0,
                     'shipping_fee' => $data['shipping_fee'] ?? 0,
                 ]);
+
+                // Calculate rental multiplier for pricing
+                $rentalMultiplier = ($data['order_type'] === 'rental' && isset($data['rental_duration'])) 
+                    ? $data['rental_duration'] 
+                    : 1;
 
                 // Delete existing items and create new ones
                 $invoice->invoiceItems()->delete();
@@ -204,7 +229,7 @@ class InvoiceController extends Controller
                         'description' => $item['description'],
                         'quantity' => $item['quantity'],
                         'unit_price' => $item['unit_price'],
-                        'total' => $item['quantity'] * $item['unit_price'],
+                        'total' => $item['quantity'] * $item['unit_price'] * $rentalMultiplier,
                         'sort_order' => $index,
                     ]);
                 }

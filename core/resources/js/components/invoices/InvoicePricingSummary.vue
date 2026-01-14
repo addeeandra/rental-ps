@@ -2,6 +2,7 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { formatCurrency } from '@/composables/useFormatters';
+import { OrderType } from '@/types/models';
 import type { InertiaForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -16,14 +17,28 @@ interface Props {
         tax_amount: string;
         shipping_fee: string;
         line_items: LineItem[];
+        order_type: OrderType;
+        rental_duration?: number;
     }>;
 }
 
 const props = defineProps<Props>();
 
+// Calculate the multiplier based on order type and rental duration
+const rentalMultiplier = computed(() => {
+    if (
+        props.form.order_type === 'rental' &&
+        props.form.rental_duration &&
+        props.form.rental_duration > 0
+    ) {
+        return props.form.rental_duration;
+    }
+    return 1;
+});
+
 const subtotal = computed(() => {
     return props.form.line_items.reduce((sum, item) => {
-        return sum + item.quantity * item.unit_price;
+        return sum + item.quantity * item.unit_price * rentalMultiplier.value;
     }, 0);
 });
 

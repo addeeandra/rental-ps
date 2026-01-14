@@ -63,7 +63,23 @@ interface LineItem {
     description: string;
     quantity: number;
     unit_price: number;
+    total: number;
 }
+
+// Calculate rental duration from start and end dates
+const calculateRentalDuration = (
+    startDate: string | undefined,
+    endDate: string | undefined,
+): number => {
+    if (startDate && endDate) {
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return diffDays;
+    }
+    return 1; // Default to 1 day
+};
 
 const form = useForm({
     partner_id: String(props.invoice.partner_id),
@@ -74,6 +90,10 @@ const form = useForm({
     order_type: props.invoice.order_type as OrderType,
     rental_start_date: props.invoice.rental_start_date?.split('T')[0] || '',
     rental_end_date: props.invoice.rental_end_date?.split('T')[0] || '',
+    rental_duration: calculateRentalDuration(
+        props.invoice.rental_start_date?.split('T')[0],
+        props.invoice.rental_end_date?.split('T')[0],
+    ),
     delivery_time: props.invoice.delivery_time?.substring(0, 5) || '09:00',
     return_time: props.invoice.return_time?.substring(0, 5) || '17:00',
     notes: props.invoice.notes || '',
@@ -86,8 +106,15 @@ const form = useForm({
         description: item.description,
         quantity: Number(item.quantity),
         unit_price: Number(item.unit_price),
+        total: Number(item.total),
     })) || [
-        { product_id: null, description: '', quantity: 1, unit_price: 0 },
+        {
+            product_id: null,
+            description: '',
+            quantity: 1,
+            unit_price: 0,
+            total: 0,
+        },
     ]) as LineItem[],
 });
 

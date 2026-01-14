@@ -81,8 +81,9 @@ const form = useForm({
     order_type: 'sales' as OrderType,
     rental_start_date: '',
     rental_end_date: '',
+    rental_duration: 1,
     delivery_time: '09:00',
-    return_time: '17:00',
+    return_time: '09:00',
     notes: '',
     terms: '',
     discount_amount: '0',
@@ -102,9 +103,54 @@ watch(
     },
 );
 
+// Auto-calculate rental end date when start date or duration changes
+watch(
+    () => [form.rental_start_date, form.rental_duration],
+    ([startDate, duration]) => {
+        // @ts-expect-error: duration is always expected as number
+        if (startDate && duration && duration > 0) {
+            const start = new Date(startDate as string);
+            const end = new Date(start);
+            end.setDate(end.getDate() + Number(duration));
+            form.rental_end_date = end.toISOString().split('T')[0];
+        }
+    },
+);
+
+// Computed property for display formatted end date
+const calculatedEndDate = computed(() => {
+    if (
+        form.rental_start_date &&
+        form.rental_duration &&
+        form.rental_duration > 0
+    ) {
+        const start = new Date(form.rental_start_date);
+        const end = new Date(start);
+        end.setDate(end.getDate() + Number(form.rental_duration));
+        return end.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+        });
+    }
+    return null;
+});
+
+// Calculate the multiplier based on order type and rental duration
+const rentalMultiplier = computed(() => {
+    if (
+        form.order_type === 'rental' &&
+        form.rental_duration &&
+        form.rental_duration > 0
+    ) {
+        return form.rental_duration;
+    }
+    return 1;
+});
+
 const subtotal = computed(() => {
     return form.line_items.reduce((sum, item) => {
-        return sum + item.quantity * item.unit_price;
+        return sum + item.quantity * item.unit_price * rentalMultiplier.value;
     }, 0);
 });
 
@@ -173,11 +219,12 @@ onMounted(() => {
         form.reference_number = '';
         form.invoice_date = new Date().toISOString().split('T')[0];
         form.due_date = calculateDueDate(form.invoice_date);
-        form.order_type = 'sales';
+        form.order_type = 'rental';
         form.rental_start_date = '';
         form.rental_end_date = '';
+        form.rental_duration = 1;
         form.delivery_time = '09:00';
-        form.return_time = '17:00';
+        form.return_time = '09:00';
         form.notes = props.defaultInvoiceNotes || '';
         form.terms = props.defaultInvoiceTerms || '';
         form.discount_amount = '0';
@@ -205,10 +252,19 @@ onMounted(() => {
             props.invoice.rental_start_date?.split('T')[0] || '';
         form.rental_end_date =
             props.invoice.rental_end_date?.split('T')[0] || '';
+        // Calculate rental duration from existing dates
+        if (props.invoice.rental_start_date && props.invoice.rental_end_date) {
+            const start = new Date(props.invoice.rental_start_date);
+            const end = new Date(props.invoice.rental_end_date);
+            const diffTime = Math.abs(end.getTime() - start.getTime());
+            form.rental_duration = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        } else {
+            form.rental_duration = 1;
+        }
         form.delivery_time =
             props.invoice.delivery_time?.substring(0, 5) || '09:00';
         form.return_time =
-            props.invoice.return_time?.substring(0, 5) || '17:00';
+            props.invoice.return_time?.substring(0, 5) || '09:00';
         form.notes = props.invoice.notes || '';
         form.terms = props.invoice.terms || '';
         form.discount_amount = String(props.invoice.discount_amount || 0);
@@ -380,19 +436,19 @@ onMounted(() => {
                     <Label>Order Type *</Label>
                     <RadioGroup v-model="form.order_type" class="flex gap-4">
                         <div class="flex items-center space-x-2">
-                            <RadioGroupItem value="sales" id="sales" />
-                            <Label
-                                for="sales"
-                                class="cursor-pointer font-normal"
-                                >Sales</Label
-                            >
-                        </div>
-                        <div class="flex items-center space-x-2">
                             <RadioGroupItem value="rental" id="rental" />
                             <Label
                                 for="rental"
                                 class="cursor-pointer font-normal"
                                 >Rental</Label
+                            >
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <RadioGroupItem value="sales" id="sales" />
+                            <Label
+                                for="sales"
+                                class="cursor-pointer font-normal"
+                                >Sales</Label
                             >
                         </div>
                     </RadioGroup>
@@ -427,23 +483,32 @@ onMounted(() => {
                         </div>
 
                         <div class="space-y-2">
-                            <Label for="rental_end_date"
-                                >Rental End Date *</Label
+                            <Label for="rental_duration"
+                                >Rental Duration (Days) *</Label
                             >
                             <Input
-                                id="rental_end_date"
-                                v-model="form.rental_end_date"
-                                type="date"
+                                id="rental_duration"
+                                v-model.number="form.rental_duration"
+                                type="number"
+                                min="1"
+                                step="1"
+                                placeholder="Number of days"
                                 :class="{
                                     'border-destructive':
-                                        form.errors.rental_end_date,
+                                        form.errors.rental_duration,
                                 }"
                             />
                             <p
-                                v-if="form.errors.rental_end_date"
+                                v-if="form.errors.rental_duration"
                                 class="text-sm text-destructive"
                             >
-                                {{ form.errors.rental_end_date }}
+                                {{ form.errors.rental_duration }}
+                            </p>
+                            <p
+                                v-if="calculatedEndDate"
+                                class="text-xs text-muted-foreground"
+                            >
+                                End date: {{ calculatedEndDate }}
                             </p>
                         </div>
 
@@ -476,36 +541,6 @@ onMounted(() => {
                                 {{ form.errors.delivery_time }}
                             </p>
                         </div>
-
-                        <div class="space-y-2">
-                            <Label for="return_time">Return Time *</Label>
-                            <Select v-model="form.return_time">
-                                <SelectTrigger
-                                    id="return_time"
-                                    :class="{
-                                        'border-destructive':
-                                            form.errors.return_time,
-                                    }"
-                                >
-                                    <SelectValue placeholder="Select time" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem
-                                        v-for="time in timeOptions"
-                                        :key="time"
-                                        :value="time"
-                                    >
-                                        {{ time }}
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <p
-                                v-if="form.errors.return_time"
-                                class="text-sm text-destructive"
-                            >
-                                {{ form.errors.return_time }}
-                            </p>
-                        </div>
                     </div>
                 </div>
 
@@ -528,7 +563,7 @@ onMounted(() => {
                         <div
                             v-for="(item, index) in form.line_items"
                             :key="index"
-                            class="grid gap-3 rounded-lg border p-3 md:grid-cols-[1fr,1fr,100px,120px,40px]"
+                            class="grid gap-3 rounded-lg border-b p-1.5 md:grid-cols-[1fr,1fr,100px,120px,40px]"
                         >
                             <div class="space-y-1">
                                 <Label class="text-xs">Product</Label>
@@ -536,7 +571,9 @@ onMounted(() => {
                                     v-model="item.product_id"
                                     @update:model-value="onProductChange(index)"
                                 >
-                                    <SelectTrigger class="h-9">
+                                    <SelectTrigger
+                                        class="h-9 w-full min-w-[320px]"
+                                    >
                                         <SelectValue
                                             placeholder="Select or enter custom"
                                         />
@@ -600,18 +637,46 @@ onMounted(() => {
                                 </Button>
                             </div>
 
-                            <div
-                                class="text-right text-sm text-muted-foreground md:col-span-5"
-                            >
-                                Total:
-                                {{
-                                    formatCurrency(
-                                        item.quantity * item.unit_price,
-                                    )
-                                }}
+                            <div class="text-right text-sm md:col-span-5">
+                                <span
+                                    v-if="
+                                        form.order_type === 'rental' &&
+                                        rentalMultiplier > 1
+                                    "
+                                    class="mr-2 text-xs text-muted-foreground"
+                                >
+                                    ({{ item.quantity }} ×
+                                    {{ formatCurrency(item.unit_price) }} ×
+                                    {{ rentalMultiplier }} days)
+                                </span>
+                                <span class="font-medium">
+                                    Total:
+                                    {{
+                                        formatCurrency(
+                                            item.quantity *
+                                                item.unit_price *
+                                                rentalMultiplier,
+                                        )
+                                    }}
+                                </span>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Rental pricing note -->
+                    <div
+                        v-if="
+                            form.order_type === 'rental' && rentalMultiplier > 1
+                        "
+                        class="rounded-lg bg-blue-50 p-3 text-sm text-blue-900 dark:bg-blue-950 dark:text-blue-100"
+                    >
+                        <strong>Note:</strong> For rental orders, subtotals are
+                        calculated as: Price × Quantity × Duration ({{
+                            rentalMultiplier
+                        }}
+                        days)
+                    </div>
+
                     <p
                         v-if="form.errors.line_items"
                         class="text-sm text-destructive"

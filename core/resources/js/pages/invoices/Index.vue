@@ -30,7 +30,6 @@ import { ref, watch } from 'vue';
 
 interface Props {
     invoices: PaginatedData<Invoice>;
-    invoiceSelected: Invoice | null;
     partners: Partner[];
     products: Product[];
     defaultInvoiceTerms?: string | null;
@@ -354,6 +353,7 @@ function openPreviewHtml(invoice: Invoice) {
             :default-invoice-terms="defaultInvoiceTerms"
             :default-invoice-notes="defaultInvoiceNotes"
             @success="showCreateDialog = false"
+            @cancel="showCreateDialog = false"
         />
 
         <UpdatePaymentDialog
