@@ -1,7 +1,3 @@
 [submodule "home/cms"]
 	path = home/cms
 	url = https://github.com/pages-cms/pages-cms.git
-[submodule "home/site"]
-	path = home/site
-	url = git@github.com:Lexington-Themes/williamsburg.git
-	branch = main
