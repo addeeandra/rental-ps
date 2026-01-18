@@ -1,0 +1,62 @@
+---
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+const affiliateSteps = [
+  {
+    title: "Apply",
+    description:
+      "Fill out a short form to join our affiliate program. It takes less than a minute.",
+  },
+  {
+    title: "Share",
+    description:
+      "Get your unique referral link and start promoting our templates however you like — website, email, social media, you name it.",
+  },
+  {
+    title: "Earn",
+    description:
+      "For every sale you refer, you earn a commission. It’s that simple.",
+  },
+  {
+    title: "Repeat",
+    description:
+      "Keep sharing and earning — there’s no limit to how much you can make.",
+  },
+];
+---
+
+<div>
+  <Text tag="h2" variant="displaySM" class="font-serif italic text-base-900">
+    How it works
+  </Text>
+  <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {
+      affiliateSteps.map((step, index) => (
+        <>
+          <div class=" p-4 bg-base-50 ">
+            <dt>
+              <div class="bg-white rounded-full p-4 w-fit flex items-center justify-center">
+                <span class="size-4 flex items-center justify-center text-xl font-serif italic text-center text-accent-500">
+                  {index + 1}
+                </span>
+              </div>
+
+              <Text
+                tag="h3"
+                variant="textBase"
+                class="font-medium text-base-800 mt-12"
+              >
+                {step.title}
+              </Text>
+            </dt>
+            <dd>
+              <Text tag="p" variant="textSM" class="mt-1 text-base-500">
+                {step.description}
+              </Text>
+            </dd>
+          </div>
+        </>
+      ))
+    }
+  </dl>
+</div>

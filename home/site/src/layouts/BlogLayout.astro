@@ -1,0 +1,157 @@
+---
+// Assets
+import { Image } from "astro:assets";
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Icons
+import Home from "@/components/fundations/icons/Home.astro";
+import ChevronRight from "@/components/fundations/icons/ChevronRight.astro";
+// Sections
+import SubscribeCTA from "@/components/blog/SubscribeCTA.astro";
+// Components
+import BlogEntry1 from "@/components/blog/BlogEntry1.astro";
+// Content
+import { getCollection } from "astro:content";
+const allPosts = await getCollection("posts");
+allPosts.sort((a, b) => {
+  const dateA = new Date(a.data.pubDate).getTime(); // Convert to timestamp
+  const dateB = new Date(b.data.pubDate).getTime(); // Convert to timestamp
+  return dateB - dateA; // Compare timestamps
+});
+const { frontmatter } = Astro.props;
+// Breadcrumbs Data
+const breadcrumbs = [
+  { label: "Home", href: "/" },
+  { label: "Blog", href: "/blog" },
+  { label: frontmatter.title, href: "#" }, // Current page (unstyled)
+];
+---
+
+<BaseLayout>
+  <section>
+    <Wrapper variant="standard" class="py-12">
+      <div class="max-w-md mx-auto">
+        <div>
+          <nav aria-label="Breadcrumb">
+            <ol class="flex items-center space-x-2">
+              {
+                breadcrumbs.map((item, index) => (
+                  <>
+                    <li>
+                      {item.label === "Home" ? (
+                        <a
+                          href={item.href}
+                          class="flex items-center gap-1 text-xs font-medium hover:text-accent-700 text-base-900"
+                        >
+                          <Home class="size-4" />
+                          <span>Home</span>
+                        </a>
+                      ) : index < breadcrumbs.length - 1 ? (
+                        <a
+                          href={item.href}
+                          class="flex items-center text-xs font-medium hover:text-accent-700 text-base-900"
+                        >
+                          {item.label}
+                        </a>
+                      ) : (
+                        <span class="text-xs font-medium text-accent-600">
+                          {item.label}
+                        </span>
+                      )}
+                    </li>
+                    {index < breadcrumbs.length - 1 && (
+                      <li class="text-base-400 flex items-center">
+                        <ChevronRight class="size-3.5" />
+                      </li>
+                    )}
+                  </>
+                ))
+              }
+            </ol>
+          </nav>
+
+          <Text
+            tag="p"
+            variant="textXS"
+            class="mt-12 text-balance text-base-500"
+          >
+            <time
+              datetime={new Date(frontmatter.pubDate).toLocaleDateString(
+                "en-US",
+                {
+                  year: "numeric",
+                  month: "long",
+                  day: "2-digit",
+                }
+              )}
+            >
+              {
+                new Date(frontmatter.pubDate).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "2-digit",
+                })
+              }</time
+            >
+          </Text>
+          <Text
+            tag="h1"
+            variant="displayMD"
+            class="mt-4 text-base-900 font-serif italic"
+          >
+            {frontmatter.title}
+          </Text>
+          <Text tag="p" variant="textSM" class="mt-2 text-base-500">
+            {frontmatter.description}
+          </Text>
+        </div>
+
+        <div
+          class="relative flex px-2 py-2 mt-4 overflow-x-scroll snap-x snap-proximity gap-2 scrollbar-hide"
+        >
+          {
+            frontmatter.tags.map((tag) => (
+              <Text
+                tag="a"
+                variant="textXS"
+                href={`/blog/tags/${tag}`}
+                class="text-sm font-medium capitalize text-base-900  hover:text-base-500 duration-300"
+              >
+                {tag}
+              </Text>
+            ))
+          }
+        </div>
+        <Image
+          width={800}
+          height={800}
+          class="w-full aspect-4/2 relative object-cover mt-8"
+          src={frontmatter.image.url}
+          alt={frontmatter.image.alt}
+        />
+        <Wrapper variant="prose" class="mt-12">
+          <slot />
+        </Wrapper>
+      </div>
+    </Wrapper>
+  </section>
+  <SubscribeCTA />
+  <section>
+    <Wrapper class="py-12">
+      <div class="flex justify-between">
+        <Text tag="h3" variant="textLG" class="text-base-900"
+          >Latest blog posts
+        </Text>
+        <Button isLink={true} href="/blog" size="xs" variant="muted">
+          Read all blog posts
+        </Button>
+      </div>
+      <div class="mt-12 grid gap-2 md:grid-cols-2 lg:grid-cols-3">
+        {allPosts.slice(0, 2).map((post) => <BlogEntry1 post={post} />)}
+      </div>
+    </Wrapper>
+  </section>
+</BaseLayout>

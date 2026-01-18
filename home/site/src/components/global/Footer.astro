@@ -1,0 +1,88 @@
+---
+// Assets
+import Logo from "@/components/assets/Logo.astro";
+import BigLogo from "@/components/assets/BigLogo.astro";
+// Fundation
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+const navigation = [
+  {
+    title: "Store",
+    links: [
+      { href: "/all-products", text: "All products" },
+      { href: "/membership", text: "Membership" },
+      { href: "/affiliates", text: "Affiliates" },
+    ],
+  },
+  {
+    title: "Navigation",
+    links: [
+      { href: "/sign-in", text: "Sign in" },
+      { href: "/sign-up", text: "Sign up" },
+      { href: "/contact", text: "Contact" },
+      { href: "/blog", text: "Blog " },
+      { href: "/helpcenter", text: "Helpcenter home" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { text: "Overview", href: "/system/overview" },
+      {
+        text: "License",
+        href: "https://www.lexingtonthemes.com/legal/license",
+      },
+      {
+        text: "Documentation",
+        href: "https://www.lexingtonthemes.com/documentation",
+      },
+      { text: "More Themes", href: "https://lexingtonthemes.com/" },
+      { text: "Lexington on X", href: "https://x.com/lexingtonthemes" },
+    ],
+  },
+];
+---
+
+<footer class="overflow-hidden relative">
+  <Wrapper variant="standard" class="py-12">
+    <div class="grid gap-6 md:grid-cols-5 items-start">
+      <div class="gap-2 lg:col-span-2 flex items-center gap-2">
+        <Logo class="text-base-900 size-4" />
+        <Text tag="p" variant="textXS" class="text-base-500">
+          © Copy right Lexington Themes <span id="year"></span>
+        </Text>
+      </div>
+      {
+        navigation.map((section) => (
+          <nav role="navigation">
+            <Text
+              tag="h3"
+              variant="displaySM"
+              class="text-base-900 font-serif italic"
+            >
+              {section.title}
+            </Text>
+            <ul class="mt-4 text-xs space-y-3">
+              {section.links.map((link) => (
+                <li>
+                  <a
+                    class=" hover:text-base-500 text-base-500"
+                    href={link.href}
+                  >
+                    {link.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))
+      }
+    </div>
+  </Wrapper>
+  <BigLogo
+    class="mt-75 opacity-20 -mb-6 md:-mb-12 lg:mb-24 lg:ml-272 lg:scale-700 text-base-900 mask-b-from-0%"
+  />
+</footer>
+<script type="module">
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>

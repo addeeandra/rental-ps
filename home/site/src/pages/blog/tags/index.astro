@@ -1,0 +1,97 @@
+---
+// Assets
+import { Image } from "astro:assets";
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+
+// Content
+import { getCollection } from "astro:content";
+const allPosts = await getCollection("posts");
+
+// Sort posts by date (newest first)
+allPosts.sort((a, b) => {
+  const dateA = new Date(a.data.pubDate).getTime();
+  const dateB = new Date(b.data.pubDate).getTime();
+  return dateB - dateA;
+});
+
+// Tag count map
+const tagCounts = allPosts.reduce((acc, post) => {
+  post.data.tags.forEach((tag) => {
+    acc[tag] = (acc[tag] || 0) + 1;
+  });
+  return acc;
+}, {});
+
+// Get image per tag
+function getTagImage(tag) {
+  const postsWithTag = allPosts.filter((post) => post.data.tags.includes(tag));
+  if (postsWithTag.length === 0) return;
+  const lastPost = postsWithTag[postsWithTag.length - 1];
+  return lastPost.data.image?.url;
+}
+
+// Get unique tags
+const tags = [...new Set(allPosts.map((post) => post.data.tags).flat())].sort();
+---
+
+<BaseLayout>
+  <section>
+    <Wrapper variant="standard" class="py-12 lg:pt-40">
+      <Text
+        tag="h1"
+        variant="displayXL"
+        class="font-serif italic font-medium tracking-tight text-base-900"
+      >
+        All tags
+      </Text>
+      <Text tag="p" variant="textBase" class="max-w-md mt-2 text-base-500">
+        Find your favorite posts.
+      </Text>
+
+      <div
+        class="mt-8 grid gap-y-24 gap-x-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        {
+          tags.map((tag) => {
+            const matchingPost = allPosts.find((post) =>
+              post.data.tags.includes(tag)
+            );
+
+            const image = matchingPost?.data.image?.url;
+            const alt = matchingPost?.data.image?.alt || `Preview for ${tag}`;
+
+            return (
+              <div class="relative ">
+                <a
+                  href={`/blog/tags/${tag}`}
+                  class="absolute inset-0 z-10 rounded-xl"
+                  aria-label={`Browse ${tag}`}
+                />
+
+                {image && (
+                  <Image
+                    src={image}
+                    alt={alt}
+                    width={800}
+                    height={800}
+                    class="object-cover object-center aspect-12/8 w-full"
+                  />
+                )}
+                <Text
+                  tag="h3"
+                  variant="textSM"
+                  class="mt-4 font-medium text-base-900 group-hover:text-base-500 text-balance capitalize"
+                >
+                  {tag.replace(/-/g, " ")}
+                </Text>
+              </div>
+            );
+          })
+        }
+      </div>
+    </Wrapper>
+  </section>
+</BaseLayout>

@@ -1,0 +1,47 @@
+---
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+---
+
+<section>
+  <Wrapper variant="standard" class="py-12">
+    <div
+      class="items-center grid grid-cols-1 gap-8 lg:grid-cols-3 p-8 lg:p-12 bg-base-100"
+    >
+      <div class="text-center text-balance lg:text-left lg:col-span-2">
+        <Text
+          tag="h2"
+          variant="displayXL"
+          class="font-medium text-base-900 font-serif italic"
+        >
+          Sign up for our newsletter
+        </Text>
+        <Text tag="p" variant="textBase" class="mt-1 text-base-500">
+          We’ll bribe you with 15% off your first order—because we’re shameless
+          like that.
+        </Text>
+      </div>
+
+      <form class="flex flex-col w-full gap-2">
+        <div>
+          <label for="name" class="sr-only"> First name </label>
+          <input
+            id="name"
+            name="text"
+            type="text"
+            placeholder="Your name"
+            aria-placeholder="Your name"
+            class="block w-full px-4 py-2 text-xs leading-tight align-middle bg-white border border-transparent gap-2 transition duration-300 ease-in-out focus:z-10 h-9 rounded-md text-base-500 ring-1 ring-base-200 placeholder-base-400 focus:border-accent-500 focus:ring-accent-100 focus:ring-2 focus:outline-none shadow-sm"
+          />
+        </div>
+
+        <Button size="sm" type="submit" variant="accent"> Subscribe </Button>
+        <Text tag="p" variant="textXS" class="mt-1 text-center text-base-400">
+          Mostly spam, promo and upsells.
+        </Text>
+      </form>
+    </div>
+  </Wrapper>
+</section>

@@ -1,0 +1,71 @@
+---
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Icons
+import Plus from "@/components/fundations/icons/Plus.astro";
+const faq = [
+  {
+    question: "Who can join?",
+    answer:
+      "Anyone with an audience — creators, bloggers, designers, developers, or anyone who wants to share our templates.",
+  },
+  {
+    question: "How do I get paid?",
+    answer:
+      "We send out payments monthly via PayPal. You'll get paid automatically once your referral earns commission.",
+  },
+  {
+    question: "Is there a minimum payout?",
+    answer: "Nope. Whether you earn $5 or $500, you’ll get paid without delay.",
+  },
+  {
+    question: "Can I promote on social media?",
+    answer:
+      "Absolutely. Share your link wherever your audience is — Instagram, YouTube, Twitter, or your newsletter.",
+  },
+  {
+    question: "Where do I apply?",
+    answer:
+      "Just click the “Apply now” button above or head to <code>/affiliate/apply</code> — it’s quick and easy.",
+  },
+];
+---
+
+<section>
+  <Wrapper variant="standard" class="py-20">
+    <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <Text
+        tag="h2"
+        variant="displaySM"
+        class="font-medium text-base-900 font-serif italic"
+      >
+        Frequently asked questions
+      </Text>
+      <div class="space-y-4 lg:col-span-2">
+        {
+          faq.map((faq) => (
+            <>
+              <details class="group selection:none ">
+                <summary class="flex items-center justify-between text-base cursor-pointer text-base-900 text-balance selection:bg-transparent focus:text-accent-600">
+                  {faq.question}
+                  <Plus
+                    size="sm"
+                    class="transition-transform group-open:rotate-45"
+                  />
+                </summary>
+                <Text
+                  tag="p"
+                  variant="textSM"
+                  class="pb-8 mt-4 text-balance text-base-500"
+                >
+                  {faq.answer}
+                </Text>
+              </details>
+            </>
+          ))
+        }
+      </div>
+    </div>
+  </Wrapper>
+</section>

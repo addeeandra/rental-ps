@@ -1,0 +1,55 @@
+---
+// Assets
+import { Image } from "astro:assets";
+// Fundation
+import Text from "@/components/fundations/elements/Text.astro";
+const { title, url, image, author, description, pubDate } = {
+  url: "/blog/posts/" + Astro.props.post.slug,
+  title: Astro.props.post.data.title,
+  author: Astro.props.post.data.author,
+  description: Astro.props.post.data.description,
+  image: Astro.props.post.data.image.url,
+  pubDate: new Date(Astro.props.post.data.pubDate).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+  }),
+};
+---
+
+<div class="relative overflow-hidden group">
+  <a
+    href={url}
+    title={`Read more: ${title}`}
+    aria-label={`Read more about: ${title}`}
+    class="absolute inset-0 z-10"></a>
+
+  <Image
+    width={800}
+    height={800}
+    alt={title}
+      loading="eager"
+      decoding="async"
+    src={image}
+    class="object-cover object-center aspect-12/8 w-full"
+  />
+  <div class="mt-2">
+    <span class="w-1/3 text-xs font-medium text-base-4500"
+      >{author} on <time datetime={pubDate}>{pubDate}</time>
+    </span>
+    <Text
+      tag="h3"
+      variant="textSM"
+      class="mt-4 font-medium text-base-900 group-hover:text-base-500 text-balance"
+    >
+      {title}
+    </Text>
+    <Text
+      tag="p"
+      variant="textSM"
+      class="relative mt-2 line-clamp-2 text-base-500"
+    >
+      {description}
+    </Text>
+  </div>
+</div>

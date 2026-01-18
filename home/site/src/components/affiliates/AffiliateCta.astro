@@ -1,0 +1,36 @@
+---
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+
+---
+
+<section>
+  <Wrapper variant="standard" class="py-20">
+    <div
+      class="items-end grid grid-cols-1 gap-8 lg:grid-cols-3 p-8 lg:p-12 bg-base-100"
+    >
+      <div class="text-center text-balance lg:text-left lg:col-span-2">
+        <Text
+          tag="h2"
+          variant="displayLG"
+          class="font-medium text-base-900 font-serif italic text-balance"
+        >
+          <span> Ready to start earning?</span>
+          <span class="font-sans not-italic"
+            >Join the affiliate program today.</span
+          >
+        </Text>
+        <Text tag="p" variant="textLG" class="mt-4 text-base-500">
+          It takes less than a minute to apply — and there’s no commitment.
+        </Text>
+      </div>
+      <div class="lg:ml-auto">
+        <Button variant="accent" size="sm" href="/affiliate/apply">
+          Apply now
+        </Button>
+      </div>
+    </div>
+  </Wrapper>
+</section>

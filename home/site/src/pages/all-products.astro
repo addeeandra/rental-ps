@@ -1,0 +1,179 @@
+---
+//  Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Sections
+import SubscribeCTA from "@/components/blog/SubscribeCTA.astro";
+// Components
+import StoreEntry1 from "@/components/store/StoreEntry1.astro";
+// Content
+const allProducts = await getCollection("store");
+import { getCollection } from "astro:content";
+const dropProducts = allProducts.filter((post) =>
+  post.data.tags.includes("latest-drops")
+);
+const seasonProducts = allProducts.filter((post) =>
+  post.data.tags.includes("season")
+);
+const weeksProducts = allProducts.filter((post) =>
+  post.data.tags.includes("week-products")
+);
+// Filter products that contain the 'drop' tag
+const lastChanceProducts = allProducts.filter((post) =>
+  post.data.tags.includes("last-chance")
+);
+const tags = [
+  ...new Set(allProducts.map((post) => post.data.tags).flat()),
+].sort();
+---
+
+<BaseLayout>
+  <section>
+    <Wrapper variant="standard" class="pt-12 pb-20 lg:pt-40">
+      <div class="max-w-4xl text-balance">
+        <Text
+          tag="h1"
+          variant="displayMD"
+          class="font-medium text-base-900 font-serif italic"
+        >
+          Search all products.
+        </Text>
+        <Text tag="p" variant="textLG" class="max-w-md mt-2 text-base-500">
+          Explore everything we offer in one place — no filters, no fluff.
+        </Text>
+      </div>
+
+      <div
+        class="mt-12 grid gap-y-12 sm:gap-x-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+      >
+        {allProducts.map((post) => <StoreEntry1 post={post} />)}
+      </div>
+    </Wrapper>
+  </section>
+  <SubscribeCTA />
+  <section>
+    <Wrapper variant="standard" class="py-20">
+      <div class="max-w-4xl text-balance">
+        <Text
+          tag="h1"
+          variant="displayMD"
+          class="font-medium text-base-900 font-serif italic"
+        >
+          Browse by category.
+        </Text>
+        <Text tag="p" variant="textLG" class="max-w-md mt-2 text-base-500">
+          Dive into curated sections to find exactly what you're looking for —
+          faster.
+        </Text>
+      </div>
+      <div class="space-y-24">
+        <div
+          class="pt-12 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+        >
+          <div class="lg:pr-12 text-balance">
+            <div>
+              <Text
+                tag="h1"
+                variant="textBase"
+                class="text-base-900 text-balance"
+              >
+                Latest drops
+              </Text>
+              <Text tag="p" variant="textXS" class="mt-2 text-base-500">
+                Search for the latest drops and products from Williamsburg.
+              </Text>
+            </div>
+            <Button
+              isLink={true}
+              size="xs"
+              variant="muted"
+              href="/store/tags/latest-drops"
+              class="mt-8 w-fit">See all drops</Button
+            >
+          </div>
+          {dropProducts.map((post) => <StoreEntry1 post={post} />)}
+        </div>
+        <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div class="lg:pr-12 text-balance">
+            <div>
+              <Text
+                tag="h1"
+                variant="textBase"
+                class="text-base-900 text-balance"
+              >
+                Season products online exclusive
+              </Text>
+              <Text tag="p" variant="textXS" class="mt-2 text-base-500">
+                Products only available for the season and online, exclusive to
+                Williamsburg.
+              </Text>
+            </div>
+            <Button
+              isLink={true}
+              size="xs"
+              variant="muted"
+              href="/store/tags/season"
+              class="mt-8 w-fit">Grab them all!</Button
+            >
+          </div>
+          {seasonProducts.map((post) => <StoreEntry1 post={post} />)}
+        </div>
+
+        <div
+          class="grid gap-y-2 sm:gap-x-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+        >
+          <div class="lg:pr-12 text-balance">
+            <div>
+              <Text
+                tag="h1"
+                variant="textBase"
+                class="text-base-900 text-balance"
+              >
+                Sale products of the week
+              </Text>
+              <Text tag="p" variant="textXS" class="mt-2 text-base-500">
+                This weeks sale products on Williamsburg. Shop now and save big,
+                we're have a limited time offer.
+              </Text>
+            </div>
+            <Button
+              isLink={true}
+              size="xs"
+              variant="muted"
+              href="/store/tags/week-product"
+              class="mt-8 w-fit">See our weekly products</Button
+            >
+          </div>
+          {weeksProducts.map((post) => <StoreEntry1 post={post} />)}
+        </div>
+        <div class="grid gap-y-2 sm:gap-x-2 grid-cols-1 sm:grid-cols-2">
+          <div class="lg:pr-12 text-balance">
+            <div>
+              <Text
+                tag="h1"
+                variant="textBase"
+                class="text-base-900 text-balance"
+              >
+                Last chance
+              </Text>
+              <Text tag="p" variant="textXS" class="mt-2 text-base-500">
+                This weeks sale products on Williamsburg. Shop now and save big,
+                we're have a limited time offer.
+              </Text>
+            </div>
+            <Button
+              isLink={true}
+              size="xs"
+              variant="muted"
+              href="/store/tags/week-product"
+              class="mt-8 w-fit">See our weekly products</Button
+            >
+          </div>
+          {lastChanceProducts.map((post) => <StoreEntry1 post={post} />)}
+        </div>
+      </div>
+    </Wrapper>
+  </section>
+</BaseLayout>

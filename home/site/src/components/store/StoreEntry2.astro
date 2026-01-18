@@ -1,0 +1,40 @@
+---
+// Assets
+import { Image } from "astro:assets";
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+const { title, url, thumbnail, price, category } = {
+  url: "/store/products/" + Astro.props.post.slug,
+  title: Astro.props.post.data.title,
+  price: Astro.props.post.data.price,
+  category: Astro.props.post.data.category,
+  thumbnail: Astro.props.post.data.thumbnail.url,
+};
+---
+
+<div
+  class="relative p-4 lg:p-8 overflow-hidden group bg-base-100 hover:bg-base-200 text-center"
+>
+  <a
+    href={url}
+    title={`Learn more about: ${title}`}
+    aria-label={`Learn more about: ${title}`}
+    class="absolute inset-0 z-10"
+  >
+  </a>
+  <div class="overflow-hidden aspect-square">
+    <Image
+      width={500}
+      height={500}
+      alt={title}
+      src={thumbnail}
+      loading="eager"
+      decoding="async"
+      class="object-cover object-center size-full"
+    />
+  </div>
+  <Text tag="p" variant="textXS" class="text-base-500">{category}</Text>
+  <Text tag="p" variant="textXS" class="text-base-900 font-medium">
+    {title}
+  </Text>
+</div>

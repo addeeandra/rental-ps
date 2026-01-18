@@ -1,0 +1,79 @@
+---
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+const affiliateCommission = [
+  {
+    stat: "20%",
+    label: "per sale",
+    description:
+      "You’ll get a 20% commission for every sale made through your link — no cap.",
+  },
+  {
+    stat: "30 days",
+    label: "cookie window",
+    description:
+      "Get credit for purchases made up to 30 days after someone clicks your link.",
+  },
+  {
+    stat: "1x",
+    label: "monthly payout",
+    description:
+      "You’ll receive your earnings once a month via PayPal — reliable and consistent.",
+  },
+  {
+    stat: "$0",
+    label: "minimum required",
+    description:
+      "You get paid no matter what you earn — there’s no threshold to reach.",
+  },
+  {
+    stat: "24/7",
+    label: "dashboard access",
+    description:
+      "Track your clicks, referrals, and earnings in real time — any time, any day.",
+  },
+  {
+    stat: "∞",
+    label: "referral potential",
+    description:
+      "There’s no limit to how many people you can refer or how much you can earn.",
+  },
+];
+
+---
+
+<section>
+  <Text
+    tag="h2"
+    variant="displaySM"
+    class="font-serif italic text-base-900"
+  >
+    Commission & payouts
+  </Text>
+
+  <dl class="mt-4 flex flex-col gap-8">
+    {
+      affiliateCommission.map((item) => (
+        <div >
+          <dt class="flex items-center gap-2">
+            <Text
+              tag="span"
+              variant="textBase"
+              class="text-accent-500 font-serif italic "
+            >
+              {item.stat}
+            </Text>
+            <Text tag="h3" variant="textBase" class="text-base-900 font-medium ">
+              {item.label}
+            </Text>
+          </dt>
+          <dd>
+            <Text tag="p" variant="textSM" class="mt-1 text-base-500">
+              {item.description}
+            </Text>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>

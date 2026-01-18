@@ -1,0 +1,177 @@
+---
+// Images
+import { Image } from "astro:assets";
+import ProductExample from "@/images/products/3.png";
+// Fundatoons
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+// Icons
+import CartIcon from "@/components/fundations/icons/Cart.astro";
+---
+
+<Button
+  id="openDrawer"
+  aria-label="Open side panel"
+  type="button"
+  iconOnly
+  size="sm"
+  variant="muted"
+>
+  <CartIcon slot="icon" size="xs" />
+</Button>
+<!-- Overlay -->
+<div
+  id="drawerOverlay"
+  class="fixed inset-0 bg-base-500/40 hidden z-40"
+  aria-hidden="true"
+>
+</div>
+<!-- Drawer panel -->
+<div
+  id="drawer"
+  class="fixed inset-y-0 right-0 transform translate-x-full transition-transform duration-300 z-50 flex flex-col w-full lg:max-w-[26rem] h-full overflow-hidden"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Shopping cart"
+>
+  <div
+    class="bg-white shadow-normal ring-1 ring-base-200 h-full flex flex-col relative"
+  >
+    <!-- Drawer header -->
+    <div
+      class="flex items-center justify-between flex-shrink-0 px-6 py-3 border-b border-base-200"
+    >
+      <Text tag="p" variant="textSM" class="uppercase text-black font-semibold">
+        Your cart
+      </Text>
+      <button
+        id="closeDrawer"
+        type="button"
+        class="text-base-500 hover:text-black focus:outline-none duration-300"
+        aria-label="Close sidebar"
+      >
+        <svg
+          class="size-4"
+          viewBox="0 0 15 15"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          ><path
+            d="M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z"
+            fill="currentColor"
+            fill-rule="evenodd"
+            clip-rule="evenodd"></path></svg
+        >
+      </button>
+    </div>
+    <!--  Products -->
+    <div class="flex-1 overflow-y-auto scrollbar-hide h-full">
+      <form class="p-2 py-3 px-6">
+        <section aria-labelledby="cart-heading">
+          <h2 id="cart-heading" class="sr-only">Items in your shopping cart</h2>
+          <ul role="list" class="divide-y divide-base-200">
+            <li class="flex py-6">
+              <div class="shrink-0">
+                <Image
+                  src={ProductExample}
+                  width={400}
+                  height={400}
+                  alt="#_"
+                  class="size-24 rounded-md object-cover sm:size-32 border border-base-200"
+                />
+              </div>
+              <div class="ml-4 flex flex-1 flex-col sm:ml-6">
+                <div>
+                  <div class="flex justify-between">
+                    <Text tag="h3" variant="textSM">
+                      <a
+                        href="#"
+                        class="font-medium text-base-700 hover:text-base-800"
+                        >Noise-Canceling Wireless Earbuds</a
+                      >
+                    </Text>
+                    <Text
+                      tag="p"
+                      variant="textSM"
+                      class="ml-4 font-medium text-base-900"
+                    >
+                      $59.99
+                    </Text>
+                  </div>
+                  <Text tag="p" variant="textSM" class="mt-1 text-base-600"
+                    >Wireless</Text
+                  >
+                </div>
+                <div class="mt-4 flex flex-1 items-end justify-between">
+                  <Text tag="p" variant="textSM" class='text-base-700"'>
+                    <span>In stock</span>
+                  </Text>
+                  <div class="ml-4">
+                    <button
+                      type="button"
+                      class="text-sm font-medium text-accent-600 hover:text-accent-500"
+                    >
+                      <span>Remove</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </section>
+      </form>
+    </div>
+    <!-- Drawer footer -->
+    <div class="flex-shrink-0 px-6 py-3 border-t border-base-200">
+      <section aria-labelledby="summary-heading">
+        <h2 id="summary-heading" class="sr-only">Order summary</h2>
+        <div>
+          <dl class="space-y-4">
+            <div class="flex items-center justify-between">
+              <dt class="text-base font-medium text-base-900">Subtotal</dt>
+              <dd class="ml-4 text-base font-medium text-base-900">$59.00</dd>
+            </div>
+          </dl>
+          <Text tag="p" variant="textSM" class="mt-1 text-base-600">
+            Shipping and taxes will be calculated at checkout.
+          </Text>
+        </div>
+
+        <Button
+          isLink={true}
+          href="/store/checkout"
+          size="sm"
+          variant="default"
+          type="submit"
+          class="mt-4 w-full">Checkout</Button
+        >
+        <div class="mt-4 text-center">
+          <a
+            href="#"
+            class="font-medium text-accent-600 hover:text-accent-500 text-sm"
+          >
+            Continue Shopping
+          </a>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<script type="module">
+  document.addEventListener("DOMContentLoaded", () => {
+    const openDrawer = document.getElementById("openDrawer");
+    const closeDrawer = document.getElementById("closeDrawer");
+    const overlay = document.getElementById("drawerOverlay");
+    const drawer = document.getElementById("drawer");
+    function showDrawer() {
+      overlay.classList.remove("hidden");
+      drawer.classList.replace("translate-x-full", "translate-x-0");
+    }
+    function hideDrawer() {
+      drawer.classList.replace("translate-x-0", "translate-x-full");
+      overlay.classList.add("hidden");
+    }
+    openDrawer.addEventListener("click", showDrawer);
+    closeDrawer.addEventListener("click", hideDrawer);
+    overlay.addEventListener("click", hideDrawer);
+  });
+</script>
