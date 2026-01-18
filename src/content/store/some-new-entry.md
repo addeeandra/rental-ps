@@ -1,0 +1,3 @@
+---
+title: Some new entry
+---
