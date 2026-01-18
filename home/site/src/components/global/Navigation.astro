@@ -71,212 +71,23 @@ const resources = [
           <span class="sr-only">Back to home</span>
           <Logo class="h-6" /></a
         >
-
-        <div class="hidden w-full lg:inline-block">
-          <StoreSearch />
-        </div>
         <div
           class="flex items-center w-full col-span-2 gap-2 lg:col-span-auto lg:col-start-3"
         >
           <a
-            href="/system/overview"
+            href="#"
             class="ml-auto text-xs text-base-900 hover:text-base-500"
           >
-            Overview
+            XGamePS
           </a>
-          <Cart />
-
-          <button
-            id="menubutton"
-            type="button"
-            aria-controls="menu"
-            aria-expanded="false"
-            aria-label="Toggle menu"
-            class="text-base-900"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="transition duration-300 ease-in-out fill-slate-400 size-6 shrink-0"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-              <path id="menuIcon" d="M4 8l16 0"></path>
-              <path d="M4 16l16 0"></path>
-            </svg>
-          </button>
         </div>
       </div>
-      <nav
-        id="menu"
-        role="navigation"
-        aria-labelledby="menubutton"
-        class="relative p-4 mt-8 overflow-hidden bg-base-50"
-      >
-        <!-- Tab section -->
-        <div id="tab-section">
-          <ul class="flex text-sm border-b gap-4 text-base-500 border-base-200">
-            <li class="-mb-px">
-              <button
-                class="inline-block pb-2 font-medium border-b-2 text-base-900 border-base-500"
-                data-tab="tab1"
-              >
-                Latest drops
-              </button>
-            </li>
-            <li class="-mb-px">
-              <button
-                class="inline-block pb-2 font-medium"
-                data-tab="lastChance"
-              >
-                EOL Products
-              </button>
-            </li>
-            <li class="-mb-px">
-              <button
-                class="inline-block pb-2 font-medium"
-                data-tab="resources"
-              >
-                Resources
-              </button>
-            </li>
-          </ul>
-          <div class="mt-2 text-left text-base-500 content">
-            <!-- Tab Content -->
-            <div id="tab1" class="tab-content">
-              <section>
-                <div
-                  class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
-                >
-                  <div class="lg:pr-12">
-                    <Text
-                      tag="p"
-                      variant="textSM"
-                      class="text-base-500 text-balance"
-                    >
-                      Search for the latest drops and products from
-                      Williamsburg.
-                    </Text>
-                    <Button
-                      isLink={true}
-                      size="xs"
-                      variant="muted"
-                      href="/store/tags/latest-drops"
-                      class="mt-8 w-fit">See all drops</Button
-                    >
-                  </div>
-                  {dropProducts.map((post) => <StoreEntry2 post={post} />)}
-                </div>
-              </section>
-            </div>
-            <div id="lastChance" class="hidden tab-content">
-              <section>
-                <div
-                  class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
-                >
-                  <div class="lg:pr-12">
-                    <Text
-                      tag="p"
-                      variant="textSM"
-                      class="text-base-500 text-balance"
-                    >
-                      Last chance to buy this products before we remove them
-                      from the catalogue
-                    </Text>
-                    <Button
-                      isLink={true}
-                      size="xs"
-                      variant="muted"
-                      href="/store/tags/latest-drops"
-                      class="mt-8 w-fit">See all drops</Button
-                    >
-                  </div>
-                  {
-                    lastChanceProducts.map((post) => (
-                      <StoreEntry2 post={post} />
-                    ))
-                  }
-                </div>
-              </section>
-            </div>
-            <div id="resources" class="hidden tab-content">
-              <section>
-                <nav role="navigation">
-                  <ul
-                    class="text-xs grid grid-cols-2 gap-y-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-2"
-                  >
-                    {
-                      resources.map((link) => (
-                        <li>
-                          <a
-                            class=" hover:text-base-500 text-base-500"
-                            href={link.href}
-                          >
-                            {link.text}
-                          </a>
-                        </li>
-                      ))
-                    }
-                  </ul>
-                </nav>
-              </section>
-            </div>
-          </div>
-        </div>
-      </nav>
     </div>
   </Wrapper>
 </section>
 <style>
-  #menu {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition:
-      max-height 0.5s ease-out,
-      opacity 0.5s ease-out;
-  }
-  #menu.expanded {
-    max-height: 1000px; /* Adjust this value based on your content */
-    opacity: 1;
-  }
+  /* Add any component-specific styles here */
 </style>
 <script type="module">
-  document.addEventListener("DOMContentLoaded", () => {
-    const menuButton = document.getElementById("menubutton");
-    const menu = document.getElementById("menu");
-    const menuIcon = document.getElementById("menuIcon");
-    const tabsList = document.getElementById("tabsList");
-    const tabPanels = document.getElementById("tabPanels");
-    let expanded = false;
-    // Toggle menu
-    menuButton.addEventListener("click", () => {
-      expanded = !expanded;
-      menuButton.setAttribute("aria-expanded", expanded);
-      menu.classList.toggle("expanded");
-      menuIcon.style.opacity = expanded ? "0" : "1";
-    });
-    // Tabs functionality
-    tabsList.addEventListener("click", (e) => {
-      if (e.target.tagName === "BUTTON") {
-        const selectedCategory = e.target.getAttribute("data-category");
-        // Update tab styles
-        tabsList.querySelectorAll("button").forEach((tab) => {
-          tab.classList.toggle("border-accent-500", tab === e.target);
-          tab.classList.toggle("border-transparent", tab !== e.target);
-        });
-        // Show/hide tab panels
-        tabPanels.querySelectorAll("div[data-category]").forEach((panel) => {
-          panel.classList.toggle(
-            "hidden",
-            panel.getAttribute("data-category") !== selectedCategory
-          );
-        });
-      }
-    });
-  });
+  // Add any component-specific scripts here
 </script>

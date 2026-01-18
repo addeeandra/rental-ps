@@ -9,35 +9,21 @@ const navigation = [
   {
     title: "Store",
     links: [
-      { href: "/all-products", text: "All products" },
-      { href: "/membership", text: "Membership" },
-      { href: "/affiliates", text: "Affiliates" },
+      { href: "#", text: "All products" },
+      { href: "#", text: "Membership", suffix: " (soon)" },
+      { href: "#", text: "Affiliates", suffix: " (soon)" },
     ],
   },
   {
-    title: "Navigation",
+    title: "About",
     links: [
-      { href: "/sign-in", text: "Sign in" },
-      { href: "/sign-up", text: "Sign up" },
-      { href: "/contact", text: "Contact" },
-      { href: "/blog", text: "Blog " },
-      { href: "/helpcenter", text: "Helpcenter home" },
+      { href: "#", text: "XGamePS" },
     ],
   },
   {
     title: "Resources",
     links: [
-      { text: "Overview", href: "/system/overview" },
-      {
-        text: "License",
-        href: "https://www.lexingtonthemes.com/legal/license",
-      },
-      {
-        text: "Documentation",
-        href: "https://www.lexingtonthemes.com/documentation",
-      },
-      { text: "More Themes", href: "https://lexingtonthemes.com/" },
-      { text: "Lexington on X", href: "https://x.com/lexingtonthemes" },
+      { href: "/helpcenter", text: "FAQ" },
     ],
   },
 ];
@@ -49,7 +35,7 @@ const navigation = [
       <div class="gap-2 lg:col-span-2 flex items-center gap-2">
         <Logo class="text-base-900 size-4" />
         <Text tag="p" variant="textXS" class="text-base-500">
-          © Copy right Lexington Themes <span id="year"></span>
+          © Copyright XGamePS <span id="year"></span>
         </Text>
       </div>
       {
@@ -70,6 +56,7 @@ const navigation = [
                     href={link.href}
                   >
                     {link.text}
+                    {link.suffix && <span class="text-xs text-base-400">{link.suffix}</span>}
                   </a>
                 </li>
               ))}
@@ -79,9 +66,6 @@ const navigation = [
       }
     </div>
   </Wrapper>
-  <BigLogo
-    class="mt-75 opacity-20 -mb-6 md:-mb-12 lg:mb-24 lg:ml-272 lg:scale-700 text-base-900 mask-b-from-0%"
-  />
 </footer>
 <script type="module">
   document.getElementById("year").textContent = new Date().getFullYear();
