@@ -3,9 +3,9 @@
 media:
   name: images
   label: Images
-  input: src/images
-  output: src/images
-  path: ""                      # start at src/images
+  input: home/site/src/images
+  output: home/site/src/images
+  path: ""                      # start at home/site/src/images
   extensions: [png, jpg, jpeg, webp, svg]
 
 settings:
@@ -19,7 +19,7 @@ content:
   - name: store
     label: Store
     type: collection
-    path: src/content/store
+    path: home/site/src/content/store
     filename: "{primary}.md"
     view:
       primary: title
@@ -84,7 +84,7 @@ content:
   - name: helpcenter
     label: Help Center
     type: collection
-    path: src/content/helpcenter
+    path: home/site/src/content/helpcenter
     filename: "{primary}.md"
     view:
       primary: title
@@ -101,7 +101,7 @@ content:
   - name: legal
     label: LEgal
     type: collection
-    path: src/content/legal
+    path: home/site/src/content/legal
     filename: "{primary}.md"
     view:
       primary: page
@@ -118,7 +118,7 @@ content:
   - name: posts
     label: Posts
     type: collection
-    path: src/content/posts
+    path: home/site/src/content/posts
     filename: "{year}{month}{day}-{hour}{minute}{second}.md"
     view:
       primary: title
@@ -142,7 +142,7 @@ content:
             type: image
             options:
               media: images
-              path: blog              # src/images/blog
+              path: blog              # home/site/src/images/blog
           - { name: alt, label: Alt text, type: string }
 
       - { name: tags, label: Tags, type: string, list: true }
