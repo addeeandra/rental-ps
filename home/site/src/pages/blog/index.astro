@@ -1,0 +1,72 @@
+---
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Components
+import BlogEntry1 from "@/components/blog/BlogEntry1.astro";
+// Sections
+import SubscribeCTA from "@/components/blog/SubscribeCTA.astro";
+// Content
+import { getCollection } from "astro:content";
+const allPosts = await getCollection("posts");
+allPosts.sort((a, b) => {
+  const dateA = new Date(a.data.pubDate).getTime(); // Convert to timestamp
+  const dateB = new Date(b.data.pubDate).getTime(); // Convert to timestamp
+  return dateB - dateA; // Compare timestamps
+});
+// Tags
+const tags = [...new Set(allPosts.map((post) => post.data.tags).flat())].sort();
+---
+
+<BaseLayout>
+  <section class="overflow-hidden">
+    <Wrapper variant="standard" class="py-12 lg:pt-40">
+      <div class="max-w-4xl text-balance">
+        <Text
+          tag="h1"
+          variant="displayXL"
+          class="font-serif italic font-medium tracking-tight text-base-900"
+        >
+          Take a peek behind the curtain
+          <span class="font-sans not-italic block">
+            Stories, thoughts, and things we’ve been building.
+          </span>
+        </Text>
+        <Text tag="p" variant="textLG" class="max-w-md mt-2 text-base-500">
+          From product drops to design philosophy — it’s all here, straight from
+          the source.
+        </Text>
+      </div>
+      <div
+        class="relative flex py-2 my-2 mt-12 overflow-x-scroll snap-x snap-proximity gap-2 scrollbar-hide"
+      >
+        {
+          tags.map((tag) => {
+            // Clean the tag: remove '#' and replace hyphens with spaces
+            const cleanedTag = tag.replace("#", "").replace(/-/g, " ");
+
+            return (
+              <Button
+                isLink={true}
+                size="xs"
+                variant="muted"
+                href={`/blog/tags/${encodeURIComponent(tag.replace("#", ""))}`}
+                class="flex capitalize shrink-0"
+              >
+                {cleanedTag} {/* Display cleaned tag with spaces */}
+              </Button>
+            );
+          })
+        }
+      </div>
+      <div
+        class="mt-8 grid gap-y-24 gap-x-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+      >
+        {allPosts.map((post) => <BlogEntry1 post={post} />)}
+      </div>
+    </Wrapper>
+  </section>
+  <SubscribeCTA />
+</BaseLayout>

@@ -1,0 +1,69 @@
+---
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Components
+import StoreEntry1 from "@/components/store/StoreEntry1.astro";
+// Content
+import { getCollection } from "astro:content";
+export async function getStaticPaths() {
+  const allProducts = await getCollection("store");
+  const uniqueTags = [
+    ...new Set(allProducts.map((post) => post.data.tags).flat()),
+  ];
+  return uniqueTags.map((tag) => {
+    const filteredPosts = allProducts.filter((post) =>
+      post.data.tags.includes(tag)
+    );
+    return {
+      params: { tag },
+      props: { posts: filteredPosts },
+    };
+  });
+}
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+// Content
+const allProducts = await getCollection("store");
+
+const tags = [
+  ...new Set(allProducts.map((post) => post.data.tags).flat()),
+].sort();
+---
+
+<BaseLayout pageTitle={tag}>
+  <section class="overflow-hidden">
+    <Wrapper variant="standard" class="py-12 lg:pt-40">
+   <Text tag="h1" variant="displayXL" class="font-serif italic font-medium tracking-tight text-base-900 ">
+  All products in <span class="capitalize">{tag.replace('#', '').replace(/-/g, ' ')}</span>
+</Text>
+
+      <div
+        class="relative flex py-2 mt-12 overflow-x-scroll gap-2  snap-x snap-proximity scrollbar-hide"
+      >
+      {
+        tags.map((tag) => {
+          const cleanedTag = tag.replace('#', '').replace(/-/g, ' ');
+          return (
+             <Button  isLink={true} 
+              size="xs"
+              variant="muted"
+              href={`/store/tags/${encodeURIComponent(tag.replace('#', ''))}`} 
+              class="flex capitalize shrink-0"
+            >
+              {cleanedTag} {}
+            </Button>
+          );
+        })
+      }
+      </div>
+      <div
+        class="mt-2 grid gap-y-2 gap-x-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3"
+      >
+        {posts.map((post) => <StoreEntry1 post={post} />)}
+      </div>
+    </Wrapper>
+  </section>
+</BaseLayout>

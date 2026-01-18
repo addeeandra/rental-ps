@@ -1,0 +1,62 @@
+---
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+const affiliateSteps = [
+  {
+    title: "Investor",
+    description:
+      "Menjadi investor kami dan dapatkan keuntungan bagi hasil dari bisnis sewa PS yang terus berkembang.",
+  },
+  {
+    title: "Mitra Bisnis",
+    description:
+      "Menjalin kerjasama sebagai mitra bisnis kami dan mengembangkan jaringan usaha Anda bersama kami.",
+  },
+  {
+    title: "Cabang",
+    description:
+      "Kembangkan bisnis sewa PS di daerah Anda. Kami menyediakan dukungan untuk kesuksesan cabang Anda.",
+  },
+  {
+    title: "Afiliasi",
+    description:
+      "Sebarkan dan dapatkan komisi — tidak ada batasan seberapa banyak yang bisa Anda hasilkan.",
+  },
+];
+---
+
+<div>
+  <Text tag="h2" variant="displaySM" class="font-serif italic text-base-900">
+    Cara Kerja
+  </Text>
+  <dl class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {
+      affiliateSteps.map((step, index) => (
+        <>
+          <div class=" p-4 bg-base-50 ">
+            <dt>
+              <div class="bg-white rounded-full p-4 w-fit flex items-center justify-center">
+                <span class="size-4 flex items-center justify-center text-xl font-serif italic text-center text-accent-500">
+                  {index + 1}
+                </span>
+              </div>
+
+              <Text
+                tag="h3"
+                variant="textBase"
+                class="font-medium text-base-800 mt-12"
+              >
+                {step.title}
+              </Text>
+            </dt>
+            <dd>
+              <Text tag="p" variant="textSM" class="mt-1 text-base-500">
+                {step.description}
+              </Text>
+            </dd>
+          </div>
+        </>
+      ))
+    }
+  </dl>
+</div>

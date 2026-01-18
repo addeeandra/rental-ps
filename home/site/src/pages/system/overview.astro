@@ -1,0 +1,141 @@
+---
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Array with links to all pages
+const pages = [
+  {
+    title: "Static",
+    categories: [
+      {
+        name: "Main",
+        links: [
+          { href: "/", text: "Home" },
+          { href: "/all-products", text: "All products" },
+          { href: "/membership", text: "Membership" },
+          { href: "/affiliates", text: "Affiliates" },
+          { href: "/store/checkout", text: "Checkout" },
+          { href: "/404", text: "Error 404" },
+        ],
+      },
+      {
+        name: "Forms",
+        links: [
+          { href: "/sign-in", text: "Sign in" },
+          { href: "/sign-up", text: "Sign up" },
+          { href: "/contact", text: "Contact" },
+        ],
+      },
+      {
+        name: "System",
+        links: [
+          { href: "/system/colors", text: "Colors" },
+          { href: "/system/links", text: "Links" },
+          { href: "/system/buttons", text: "Buttons" },
+          { href: "/system/typography", text: "Typography" },
+          {
+            href: "https://lexingtonthemes.com/legal/license",
+            text: "License",
+          },
+          {
+            href: "https://lexingtonthemes.com/legal/support/",
+            text: "Support",
+          },
+          {
+            href: "https://lexingtonthemes.com/documentation/",
+            text: "Documentation",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    title: "Content collections",
+    categories: [
+      {
+        name: "Store",
+        links: [
+          { href: "/", text: "Home" },
+          { href: "/store/products/1", text: "Details" },
+          { href: "/store/tags", text: "Tag index" },
+          { href: "/store/tags/music", text: "Tag category" },
+        ],
+      },
+      {
+        name: "Help center",
+        links: [
+          { href: "/helpcenter", text: "Home" },
+          { href: "/helpcenter/1", text: "Details" },
+        ],
+      },
+      {
+        name: "Blog",
+        links: [
+          { href: "/blog", text: "Home" },
+          { href: "/blog/posts/1", text: "Details" },
+          { href: "/blog/tags", text: "Tag index" },
+          { href: "/blog/tags/uiux", text: "Tag category" },
+          { href: "/rss.xml", text: "RSS" },
+        ],
+      },
+      {
+        name: "Legal",
+        links: [{ href: "/legal/terms", text: "Details" }],
+      },
+    ],
+  },
+];
+---
+
+<BaseLayout>
+  <section>
+    <Wrapper variant="standard" class="py-12">
+      <div>
+        <Text tag="h1" variant="displaySM" class="font-medium text-base-900">
+          Overview
+        </Text>
+        <Text tag="p" variant="textBase" class="max-w-md mt-2 text-base-500">
+          Preview all pages on Williamsburg
+        </Text>
+      </div>
+      <div class="flex flex-col mt-12 gap-12">
+        {
+          pages.map((section) => (
+            <div>
+              <Text
+                tag="h2"
+                variant="textBase"
+                class=" text-base-900 text-balance"
+              >
+                {section.title}
+              </Text>
+              <div class="mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-12 gap-x-6 ">
+                {section.categories.map((category) => (
+                  <div class="flex flex-col gap-4 ">
+                    <Text
+                      tag="h3"
+                      variant="textSM"
+                      class=" text-base-500 text-balance"
+                    >
+                      {category.name}
+                    </Text>
+                    <ul role="list" class="text-xs space-y-1 text-base-500">
+                      {category.links.map((link) => (
+                        <li>
+                          <a href={link.href} class=" hover:text-base-500">
+                            {link.text}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </Wrapper>
+  </section>
+</BaseLayout>

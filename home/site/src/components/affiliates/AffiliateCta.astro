@@ -1,0 +1,37 @@
+---
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+
+---
+
+<section>
+  <Wrapper variant="standard" class="py-20">
+    <div
+      class="items-end grid grid-cols-1 gap-8 lg:grid-cols-3 p-8 lg:p-12 bg-base-100"
+    >
+      <div class="text-center text-balance lg:text-left lg:col-span-2">
+        <Text
+          tag="h2"
+          variant="displayLG"
+          class="font-medium text-base-900 font-serif italic text-balance"
+        >
+          <span> Siap Bergabung?</span>
+          <span class="font-sans not-italic"
+            >Bergabung dengan bisnis PS kami.</span
+          >
+        </Text>
+        <Text tag="p" variant="textLG" class="mt-4 text-base-500">
+          Just say 'hi'—kami siap membantu Anda memulai perjalanan kemitraan
+          Anda dengan kami.
+        </Text>
+      </div>
+      <div class="lg:ml-auto">
+        <Button variant="accent" size="sm" href="https://wa.me/6285173030093" isLink={true} target="_blank">
+          Bergabung Sekarang
+        </Button>
+      </div>
+    </div>
+  </Wrapper>
+</section>

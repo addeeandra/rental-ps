@@ -1,0 +1,260 @@
+---
+// Assets
+import { Image } from "astro:assets";
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Components
+import StoreEntry2 from "@/components/store/StoreEntry2.astro";
+import StoreReviewModal from "@/components/store/StoreReviewModal.astro";
+// Store
+const allProducts = await getCollection("store");
+import { getCollection } from "astro:content";
+const { frontmatter } = Astro.props;
+// Scripts
+import StoreGallery from "@/components/fundations/scripts/StoreGalleryScript.astro";
+import ModalScript from "@/components/fundations/scripts/ModalScript.astro";
+---
+
+<BaseLayout>
+  <section>
+    <Wrapper variant="standard" class="pb-12 pt-4">
+      <div class="grid grid-cols-1 gap-2 lg:grid-cols-2 gap-12">
+        <div
+          class="flex flex-col justify-between order-last h-full lg:order-none"
+        >
+          <div>
+            <div>
+              <div class="flex items-center justify-between">
+                <Text
+                  tag="h1"
+                  variant="displayMD"
+                  class="font-serif italic text-base-900"
+                >
+                  {frontmatter.title}
+                </Text>
+                <Text
+                  tag="p"
+                  variant="displaySM"
+                  class="text-accent-500 font-serif italic"
+                >
+                  {frontmatter.price}
+                </Text>
+              </div>
+              <Text
+                tag="p"
+                variant="textBase"
+                class="mt-4 text-base-500 text-balance"
+              >
+                {frontmatter.description}
+              </Text>
+              <ul role="list" class="flex flex-wrap mt-4 gap-2">
+                {
+                  frontmatter.tags.map((tag) => (
+                    <Text
+                      tag="a"
+                      variant="textXS"
+                      href={`/store/tags/${tag}`}
+                      class="text-sm font-medium capitalize text-base-900 duration-300  hover:text-base-500"
+                    >
+                      {tag}
+                    </Text>
+                  ))
+                }
+              </ul>
+              <Button size="xs" variant="default" class="justify-center mt-8">
+                Purchase
+              </Button>
+            </div>
+            <!-- Tab section -->
+            <div class="mt-8" id="tab-section">
+              <ul
+                class="flex text-sm border-b gap-4 text-base-500 border-base-200"
+              >
+                <li class="-mb-px">
+                  <button
+                    class="inline-block py-2 font-medium border-b-2 text-base-900 border-base-500"
+                    data-tab="tab1"
+                  >
+                    Details
+                  </button>
+                </li>
+                <li class="-mb-px">
+                  <button
+                    class="inline-block py-2 font-medium"
+                    data-tab="shipping"
+                  >
+                    Shipping
+                  </button>
+                </li>
+                <li class="-mb-px">
+                  <button
+                    class="inline-block py-2 font-medium"
+                    data-tab="returns"
+                  >
+                    Returns
+                  </button>
+                </li>
+                <li class="-mb-px">
+                  <button
+                    class="inline-block py-2 font-medium"
+                    data-tab="reviews"
+                  >
+                    Reviews
+                  </button>
+                </li>
+              </ul>
+              <div class="py-4 pt-4 text-left text-base-500 content">
+                <!-- Tab Content -->
+                <div id="tab1" class="tab-content">
+                  <section class="py-4">
+                    <Text tag="p" variant="textBase" class="undefined">
+                      This product is crafted from high-quality materials
+                      designed for durability and comfort. It features modern
+                      design elements and is perfect for everyday use.
+                    </Text>
+                    <ul
+                      role="list"
+                      class="pl-5 mt-4 text-sm list-disc space-y-1 text-base-500 marker:text-accent-500"
+                    >
+                      {
+                        frontmatter.highlights.map((highlight) => (
+                          <li>{highlight}</li>
+                        ))
+                      }
+                    </ul>
+                  </section>
+                </div>
+                <div id="shipping" class="hidden tab-content">
+                  <section class="py-4">
+                    <Text tag="p" variant="textSM" class="undefined">
+                      {frontmatter.shipping}
+                    </Text>
+                  </section>
+                </div>
+                <div id="returns" class="hidden tab-content">
+                  <section class="py-4">
+                    <Text tag="p" variant="textSM" class="undefined">
+                      {frontmatter.returns}
+                    </Text>
+                  </section>
+                </div>
+                <div id="reviews" class="hidden tab-content">
+                  <section class="py-4">
+                    <div class="flex flex-col gap-4">
+                      {
+                        frontmatter.testimonials ? (
+                          frontmatter.testimonials.map((testimonial) => (
+                            <div class="flex gap-x-4 ">
+                              <div class="flex-none">
+                                <Image
+                                  width={400}
+                                  height={400}
+                                  src={testimonial.img}
+                                  alt={testimonial.name}
+                                  class="rounded-full size-8 bg-base-100"
+                                />
+                              </div>
+                              <div>
+                                <Text
+                                  tag="h3"
+                                  variant="textBase"
+                                  class="font-medium leading-normal text-base-900 "
+                                >
+                                  {testimonial.name}
+                                </Text>
+                                <Text
+                                  tag="p"
+                                  variant="textXS"
+                                  class="leading-normal text-base-500"
+                                >
+                                  <time datetime={testimonial.date}>
+                                    {testimonial.date}
+                                  </time>
+                                </Text>
+                                <Text
+                                  tag="p"
+                                  variant="textSM"
+                                  class="mt-2 leading-normal text-base-500"
+                                >
+                                  {testimonial.text}
+                                </Text>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p>No testimonials available</p>
+                        )
+                      }
+                    </div>
+                    <div class="flex mt-8">
+                      <Button id="modalButton" size="xs" variant="muted">
+                        Write a Review
+                      </Button>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Product Image Gallery -->
+        <div class="z-10 lg:order-first" id="product-gallery">
+          <div class="grid grid-cols-7 gap-2">
+            <!-- Thumbnails -->
+            <div class="flex flex-col col-span-1 gap-2" id="thumbnails">
+              <!-- Thumbnails will be rendered here dynamically -->
+              {
+                frontmatter.images.map((image, index) => (
+                  <button
+                    class="w-full h-auto overflow-hidden  bg-base-100  size-24  aspect-square"
+                    data-index={index}
+                  >
+                    <Image
+                      width={800}
+                      height={800}
+                      src={image.url}
+                      alt={image.alt}
+                      class="object-cover aspect-square"
+                    />
+                  </button>
+                ))
+              }
+            </div>
+            <!-- Main Image -->
+            <div class="overflow-hidden bg-base-100 col-span-6" id="main-image">
+              <!-- Main image will be dynamically updated here -->
+              <Image
+                width={1000}
+                height={1000}
+                src={frontmatter.images[0]?.url}
+                alt={frontmatter.images[0]?.alt}
+                class="object-cover size-full aspect-square"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </Wrapper>
+  </section>
+  <section>
+    <Wrapper variant="standard" class="py-12">
+      <Text
+        tag="h4"
+        variant="textLG"
+        class="text-base-900 text-balance lg:pr-12"
+      >
+        Related products
+      </Text>
+      <div class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        {allProducts.slice(0, 4).map((post) => <StoreEntry2 post={post} />)}
+      </div>
+    </Wrapper>
+  </section>
+</BaseLayout>
+<!-- Modal Structure -->
+<StoreReviewModal />
+<ModalScript />
+<StoreGallery />

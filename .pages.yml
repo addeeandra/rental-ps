@@ -1,0 +1,149 @@
+# .pages.yml — Pages CMS config for: store, helpcenter, legal, posts
+
+media:
+  name: images
+  label: Images
+  input: home/site/src/images
+  output: home/site/src/images
+  path: ""                      # start at home/site/src/images
+  extensions: [png, jpg, jpeg, webp, svg]
+
+settings:
+  content:
+    merge: true
+
+content:
+  # ---------------------
+  # STORE
+  # ---------------------
+  - name: store
+    label: Store
+    type: collection
+    path: home/site/src/content/store
+    filename: "{primary}.md"
+    view:
+      primary: title
+      fields: [title, category, price]
+      sort: [title]
+    fields:
+      - { name: title,     label: Title, type: string, required: true }
+      - { name: category,  label: Category, type: string }
+      - { name: price,     label: Price, type: string }
+      - { name: checkout,  label: Checkout URL, type: string }
+      - { name: returns,   label: Returns, type: text }
+      - { name: shipping,  label: Shipping, type: text }
+      - { name: license,   label: License, type: string }
+      - { name: description, label: Description, type: text }
+
+      - name: highlights
+        label: Highlights
+        type: string
+        list: true
+
+      - name: thumbnail
+        label: Thumbnail
+        type: object
+        fields:
+          - name: url
+            label: Image
+            type: image
+            options:
+              media: images
+              path: products          # src/images/products
+          - { name: alt, label: Alt text, type: string }
+
+      - name: images
+        label: Gallery Images
+        type: object
+        list: true
+        fields:
+          - name: url
+            label: Image
+            type: image
+            options:
+              media: images
+              path: products
+          - { name: alt, label: Alt text, type: string }
+
+      - name: testimonials
+        label: Testimonials
+        type: object
+        list: true
+        fields:
+          - { name: name,  label: Name, type: string }
+          - { name: date,  label: Date, type: string }
+          - { name: text,  label: Text, type: text }
+          - { name: img,   label: Image URL, type: string } # plain string, not validated
+
+      - { name: tags, label: Tags, type: string, list: true }
+      - { name: body, label: Body, type: rich-text }
+
+  # ---------------------
+  # HELP CENTER
+  # ---------------------
+  - name: helpcenter
+    label: Help Center
+    type: collection
+    path: home/site/src/content/helpcenter
+    filename: "{primary}.md"
+    view:
+      primary: title
+      fields: [title]
+      sort: [title]
+    fields:
+      - { name: title, label: Title, type: string, required: true }
+      - { name: intro, label: Intro, type: text }
+      - { name: body,  label: Body, type: rich-text }
+
+  # ---------------------
+  # INFO PAGES
+  # ---------------------
+  - name: legal
+    label: LEgal
+    type: collection
+    path: home/site/src/content/legal
+    filename: "{primary}.md"
+    view:
+      primary: page
+      fields: [page, pubDate]
+      sort: [page]
+    fields:
+      - { name: page,    label: Page, type: string, required: true }
+      - { name: pubDate, label: Publication Date, type: date }
+      - { name: body,    label: Body, type: rich-text }
+
+  # ---------------------
+  # POSTS
+  # ---------------------
+  - name: posts
+    label: Posts
+    type: collection
+    path: home/site/src/content/posts
+    filename: "{year}{month}{day}-{hour}{minute}{second}.md"
+    view:
+      primary: title
+      fields: [title, pubDate, author]
+      sort: [pubDate]
+      default:
+        sort: pubDate
+        order: desc
+    fields:
+      - { name: title,       label: Title, type: string, required: true }
+      - { name: pubDate,     label: Publication Date, type: date }
+      - { name: description, label: Description, type: text }
+      - { name: author,      label: Author, type: string }
+
+      - name: image
+        label: Cover Image
+        type: object
+        fields:
+          - name: url
+            label: Image
+            type: image
+            options:
+              media: images
+              path: blog              # home/site/src/images/blog
+          - { name: alt, label: Alt text, type: string }
+
+      - { name: tags, label: Tags, type: string, list: true }
+      - { name: body, label: Body, type: rich-text }

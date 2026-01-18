@@ -7,6 +7,7 @@ services:
       POSTGRES_DB: ${DB_DATABASE}
     volumes:
       - db_data:/var/lib/postgresql/data
+      - '.docker/pgsql/create-cms-database.sql:/docker-entrypoint-initdb.d/10-create-cms-database.sql'
     ports:
       - "5432:5432" 
   redis:

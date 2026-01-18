@@ -1,0 +1,62 @@
+---
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Sections
+import CategoryCta from "@/components/store/CategoryCta.astro";
+// Components
+import StoreEntry2 from "@/components/store/StoreEntry2.astro";
+import BlogEntry1 from "@/components/blog/BlogEntry1.astro";
+// Content
+import { getCollection } from "astro:content";
+// Store
+const allProducts = (await getCollection("store")).sort((a, b) =>
+  a.data.title.localeCompare(b.data.title)
+);
+const allPosts = await getCollection("posts");
+allPosts.sort((a, b) => {
+  const dateA = new Date(a.data.pubDate).getTime(); // Convert to timestamp
+  const dateB = new Date(b.data.pubDate).getTime(); // Convert to timestamp
+  return dateB - dateA; // Compare timestamps
+});
+// Tags
+const tags = [...new Set(allPosts.map((post) => post.data.tags).flat())].sort();
+---
+
+<BaseLayout>
+  <section>
+    <Wrapper variant="standard" class="py-12 lg:pt-12">
+      <div class="items-end grid gap-2 md:grid-cols-3">
+        <div class="md:col-span-2">
+          <div class="max-w-4xl text-balance">
+            <Text
+              tag="h1"
+              variant="displayXL"
+              class="font-serif italic font-medium tracking-tight text-base-900"
+            >
+              XGamePS — <span class="font-sans not-italic"
+                ><span class="bg-yellow-400">Rental</span> PS, Nintendo & Playbox <span class="bg-red-800 text-white">Harian</span>.</span
+              >
+            </Text>
+            <Text tag="p" variant="textBase" class="max-w-md mt-2 text-base-500">
+              Main seru sepuasnya <span class="text-red-600">anti-ribet</span> bareng keluarga atau temen kamu. Cari Konsol Kesukaanmu &rarr; Pesan &rarr; Kami Antar. Gampang banget!
+            </Text>
+          </div>
+        </div>
+        <Button
+          isLink={true}
+          size="xs"
+          variant="accent"
+          href="https://wa.me/6285173030093"
+          target="_blank"
+          class="w-fit md:ml-auto">Pesan Sekarang</Button
+        >
+      </div>
+      <div class="mt-12 grid gap-y-2 sm:gap-x-2 grid-cols-1 md:grid-cols-3">
+        {allProducts.slice(2, 5).map((post) => <StoreEntry2 post={post} />)}
+      </div>
+    </Wrapper>
+  </section>
+</BaseLayout>

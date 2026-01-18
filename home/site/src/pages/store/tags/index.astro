@@ -1,0 +1,97 @@
+---
+// Assets
+import { Image } from "astro:assets";
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Content
+import { getCollection } from "astro:content";
+
+const allProducts = await getCollection("store");
+
+// Count tags
+const tagCounts = allProducts.reduce((acc, post) => {
+  post.data.tags.forEach((tag) => {
+    acc[tag] = (acc[tag] || 0) + 1;
+  });
+  return acc;
+}, {});
+
+// Get unique tags
+const tags = Object.keys(tagCounts);
+
+// Get image per tag
+function getTagImage(tag) {
+  const filtered = allProducts.filter((post) => post.data.tags.includes(tag));
+  if (filtered.length === 0) return;
+
+  const lastPost = filtered[filtered.length - 1];
+  return lastPost.data.thumbnail?.url;
+}
+---
+
+<BaseLayout>
+  <section>
+    <Wrapper variant="standard" class="py-12 lg:pt-40">
+      <Text
+        tag="h1"
+        variant="displayXL"
+        class="font-serif italic font-medium tracking-tight text-base-900"
+      >
+        Browse by categories
+      </Text>
+      <Text tag="p" variant="textBase" class="max-w-md mt-2 text-base-500">
+        Explore our diverse range of categories tailored to your needs.
+      </Text>
+
+      <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+        {
+          tags.map((tag) => {
+            const matchingPost = allProducts.find((post) =>
+              post.data.tags.includes(tag)
+            );
+            const image = matchingPost?.data.thumbnail?.url;
+
+            return (
+              <div class="relative p-4 overflow-hidden group bg-base-50 rounded-xl">
+                <a
+                  href={`/store/tags/${tag}`}
+                  class="absolute inset-0 z-10 rounded-xl"
+                  aria-label={`Browse ${tag} (${tagCounts[tag]} items)`}
+                />
+                <div class="flex items-center justify-between gap-4">
+                  <Text
+                    tag="h3"
+                    variant="textXS"
+                    class="capitalize text-base-500"
+                  >
+                    {tag}
+                  </Text>
+                  <Text
+                    tag="span"
+                    variant="textXS"
+                    class="text-right text-base-500"
+                  >
+                    ({tagCounts[tag]})
+                  </Text>
+                </div>
+                <div class="p-4 overflow-hidden aspect-square group-hover:opacity-75 duration-300 transition-all">
+                  {image && (
+                    <Image
+                      src={image}
+                      alt={`${tag} preview`}
+                      width={600}
+                      height={400}
+                      class="object-cover w-full aspect-[4/3] rounded-xl"
+                    />
+                  )}
+                </div>
+              </div>
+            );
+          })
+        }
+      </div>
+    </Wrapper>
+  </section>
+</BaseLayout>

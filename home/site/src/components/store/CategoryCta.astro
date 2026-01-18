@@ -1,0 +1,225 @@
+---
+// Assets
+import { Image } from "astro:assets";
+import Product1 from "@/images/products/4.png";
+import Product2 from "@/images/products/5.png";
+import Product3 from "@/images/products/7.png";
+import Product4 from "@/images/products/8.png";
+import Product5 from "@/images/products/10.png";
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Icons
+import ArrowRight from "@/components/fundations/icons/ArrowRight.astro";
+---
+
+<section>
+  <Wrapper variant="standard" class="py-12 lg:py-24">
+    <h2 class="sr-only">Browse by categories</h2>
+    <div class="grid grid-cols-1 gap-2 lg:grid-cols-6">
+      <div class="overflow-hidden bg-base-50 lg:col-span-3">
+        <div class="flex flex-col justify-between h-full">
+          <div
+            class="p-4 lg:p-8 text-balance flex flex-col justify-between h-full"
+          >
+            <div>
+              <Text
+                tag="h3"
+                variant="displaySM"
+                class="font-serif italic text-base-900"
+              >
+                Everything, dumped here.
+              </Text>
+              <Text tag="p" variant="textSM" class="mt-2 text-base-500">
+                Too lazy to browse categories? We get it. Here’s literally
+                everything we sell in one place. Go wild.
+              </Text>
+            </div>
+            <Button
+              iconOnly
+              size="sm"
+              variant="muted"
+              isLink={true}
+              href="/all-products"
+              class="mt-8"
+              aria-label="Browse all products"
+            >
+              <ArrowRight slot="icon" size="sm" />
+            </Button>
+          </div>
+          <Image
+            src={Product1}
+            width={800}
+            height={800}
+            alt="image1"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      </div>
+      <div class="relative overflow-hidden lg:col-span-3 bg-base-50">
+        <div class="relative flex flex-col justify-between h-full">
+          <div
+            class="p-4 lg:p-8 text-balance flex flex-col justify-between h-full"
+          >
+            <div>
+              <Text
+                tag="h3"
+                variant="displaySM"
+                class="font-serif italic text-base-900"
+              >
+                Freshly dropped. Still warm.
+              </Text>
+              <Text tag="p" variant="textSM" class="mt-2 text-base-500">
+                The newest stuff we could slap a price tag on. Blink and it’s
+                gone—probably.
+              </Text>
+            </div>
+            <Button
+              iconOnly
+              size="sm"
+              variant="muted"
+              isLink={true}
+              href="/store/tags/latest-drops"
+              class="mt-8"
+              aria-label="View latest drops"
+            >
+              <ArrowRight slot="icon" size="sm" />
+            </Button>
+          </div>
+          <Image
+            src={Product2}
+            width={800}
+            height={800}
+            alt="image1"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      </div>
+      <div class="relative overflow-hidden lg:col-span-2 bg-base-50">
+        <div class="relative flex flex-col justify-between h-full">
+          <div
+            class="p-4 lg:p-8 text-balance flex flex-col justify-between h-full"
+          >
+            <div>
+              <Text
+                tag="h3"
+                variant="displaySM"
+                class="font-serif italic text-base-900"
+              >
+                Seasonal goods only available online
+              </Text>
+              <Text tag="p" variant="textSM" class="mt-2 text-base-500">
+                Only available online. Only for now. Only if you're fast. Miss
+                it and it’s gone till next year—or forever.
+              </Text>
+            </div>
+            <Button
+              iconOnly
+              size="sm"
+              variant="muted"
+              isLink={true}
+              href="/store/tags/season"
+              class="mt-8"
+              aria-label="View seasonal goods"
+            >
+              <ArrowRight slot="icon" size="sm" />
+            </Button>
+          </div>
+          <Image
+            src={Product3}
+            width={800}
+            height={800}
+            alt="image1"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      </div>
+      <div class="relative overflow-hidden lg:col-span-2 bg-base-50">
+        <div class="relative flex flex-col justify-between h-full">
+          <div
+            class="p-4 lg:p-8 text-balance flex flex-col justify-between h-full"
+          >
+            <div>
+              <Text
+                tag="h3"
+                variant="displaySM"
+                class="font-serif italic text-base-900"
+              >
+                This week’s deals
+              </Text>
+              <Text tag="p" variant="textSM" class="mt-2 text-base-500">
+                Blink and you'll miss it. Weekly steals that won’t stick
+                around—because good taste moves fast.
+              </Text>
+            </div>
+            <Button
+              iconOnly
+              size="sm"
+              variant="muted"
+              isLink={true}
+              href="/store/tags/week-products"
+              class="mt-8"
+              aria-label="View this week's deals"
+            >
+              <ArrowRight slot="icon" size="sm" />
+            </Button>
+          </div>
+          <Image
+            src={Product4}
+            width={800}
+            height={800}
+            alt="image1"
+            loading="eager"
+            decoding="async"
+          />
+        </div>
+      </div>
+      <div class="relative overflow-hidden lg:col-span-2 bg-base-50">
+        <div class="relative flex flex-col justify-between h-full">
+          <div
+            class="p-4 lg:p-8 text-balance flex flex-col justify-between h-full"
+          >
+            <div>
+              <Text
+                tag="h3"
+                variant="displaySM"
+                class="font-serif italic text-base-900"
+              >
+                Categories worth scrolling
+              </Text>
+              <Text tag="p" variant="textSM" class="mt-2 text-base-500">
+                From headphones to holograms (eventually), explore all the good
+                stuff by category. Your next obsession is here.
+              </Text>
+            </div>
+            <Button
+              iconOnly
+              size="sm"
+              variant="muted"
+              isLink={true}
+              href="/store/tags"
+              class="mt-8"
+              aria-label="Browse all categories"
+            >
+              <ArrowRight slot="icon" size="sm" />
+            </Button>
+          </div>
+          <div>
+            <Image
+              src={Product5}
+              width={800}
+              height={800}
+              alt="image1"
+              loading="eager"
+              decoding="async"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </Wrapper>
+</section>

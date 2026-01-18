@@ -1,0 +1,55 @@
+---
+// Fundations
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Sactions
+import HowItWorks from "@/components/affiliates/HowItWorks.astro";
+import Comission from "@/components/affiliates/Comission.astro";
+import Perks from "@/components/affiliates/Perks.astro";
+import AffiliateFaq from "@/components/affiliates/AffiliateFaq.astro";
+import AffiliateCta from "@/components/affiliates/AffiliateCta.astro";
+---
+
+<BaseLayout>
+  <section>
+    <Wrapper variant="standard" class="py-12 lg:pt-40">
+      <div class="max-w-xl text-balance mx-auto text-center">
+        <Text
+          tag="h1"
+          variant="displayXL"
+          class="font-serif italic font-medium tracking-tight text-base-900"
+        >
+          Partnership <span class="font-sans not-italic block"
+            >Tertarik dengan bisnis sewa PS?</span
+          >
+        </Text>
+        <Text
+          tag="p"
+          variant="textLG"
+          class="max-w-md mx-auto mt-2 text-base-500"
+        >
+          Hubungi kami untuk menjadi investor atau mitra bisnis kami.
+        </Text>
+      </div>
+      <Button
+        isLink={true}
+        size="base"
+        variant="accent"
+        href="https://wa.me/6285173030093"
+        target="_blank"
+        class="w-fit mt-8 mx-auto">Saya Tertarik</Button
+      >
+    </Wrapper>
+  </section>
+  <section>
+    <Wrapper variant="standard" class="py-12">
+      <div class="grid gap-12 grid-cols-1 md:grid-cols-1">
+        <HowItWorks />
+      </div>
+    </Wrapper>
+  </section>
+  <AffiliateFaq />
+  <AffiliateCta />
+</BaseLayout>

@@ -1,0 +1,93 @@
+---
+// Assets
+import Logo from "@/components/assets/Logo.astro";
+import Cart from "@/components/global/Cart.astro";
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Components
+import StoreSearch from "@/components/store/StoreSearch.astro";
+import StoreEntry2 from "@/components/store/StoreEntry2.astro";
+// Content
+import { getCollection } from "astro:content";
+// Store
+const allProducts = (await getCollection("store")).sort((a, b) =>
+  a.data.title.localeCompare(b.data.title)
+);
+// Filter products that contain the 'drop' tag
+const lastChanceProducts = allProducts.filter((post) =>
+  post.data.tags.includes("last-chance")
+);
+
+// Filter products that contain the 'drop' tag
+const dropProducts = allProducts.filter((post) =>
+  post.data.tags.includes("latest-drops")
+);
+
+const resources = [
+  { text: "Overview", href: "/system/overview" },
+  { text: "License", href: "https://www.lexingtonthemes.com/legal/license" },
+  {
+    text: "Documentation",
+    href: "https://www.lexingtonthemes.com/documentation",
+  },
+  { text: "More Themes", href: "https://lexingtonthemes.com/" },
+  { text: "Lexington on X", href: "https://x.com/lexingtonthemes" },
+  // Add more items as needed
+  { text: "Store", href: "/store/home" },
+  { href: "/contact", text: "Contact" },
+  { href: "/pricing/pricing-full", text: "Pricing" },
+  { href: "/legal/about", text: "About us" },
+  { href: "/blog", text: "Blog home" },
+  { href: "/helpcenter", text: "Helpcenter home" },
+  { text: "Tech News", href: "#_" },
+  { text: "Product Features", href: "#_" },
+  { text: "Reviews", href: "#_" },
+  { text: "Pricing", href: "#_" },
+  { text: "Store Locator", href: "#_" },
+  { text: "Returns & Exchanges", href: "#_" },
+  { text: "Warranty Information", href: "#_" },
+  { text: "Customer Support", href: "#_" },
+  { text: "Shipping Information", href: "#_" },
+  { text: "FAQ", href: "#_" },
+  { text: "Tech Blog", href: "#_" },
+  { text: "Account Settings", href: "#_" },
+  { text: "About Us", href: "#_" },
+  { text: "Terms & Conditions", href: "#_" },
+  { text: "Privacy Policy", href: "#_" },
+  { text: "Contact Us", href: "#_" },
+  { text: "Careers", href: "#_" },
+  { text: "Affiliate Program", href: "#_" },
+  { text: "Press Releases", href: "#_" },
+];
+---
+
+<section id="navigation">
+  <Wrapper variant="standard">
+    <div class="pt-4">
+      <div class="w-full grid grid-cols-3 gap-4 lg:gap-12 lg:h-5">
+        <a href="/">
+          <span class="sr-only">Back to home</span>
+          <Logo class="h-6" /></a
+        >
+        <div
+          class="flex items-center w-full col-span-2 gap-2 lg:col-span-auto lg:col-start-3"
+        >
+          <a
+            href="#"
+            class="ml-auto text-xs text-base-900 hover:text-base-500"
+          >
+            XGamePS
+          </a>
+        </div>
+      </div>
+    </div>
+  </Wrapper>
+</section>
+<style>
+  /* Add any component-specific styles here */
+</style>
+<script type="module">
+  // Add any component-specific scripts here
+</script>

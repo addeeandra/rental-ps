@@ -1,0 +1,35 @@
+---
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+// Icons
+import ChevronRight from "@/components/fundations/icons/ChevronRight.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+const { title, intro, url } = {
+  url: "/helpcenter/" + Astro.props.post.slug,
+  intro: Astro.props.post.data.intro,
+  title: Astro.props.post.data.title,
+};
+---
+
+<div class="justify-between py-8 grid grid-cols-2 gap-4">
+  <Text
+    tag="h3"
+    variant="textBase"
+    class="text-base-900 group-hover:text-base-500 duration-300 transition-all text-balance"
+  >
+    {title}
+  </Text>
+
+  <Button
+    href={url}
+    isLink={true}
+    title={`Read more: ${title}`}
+    aria-label={`Read more about: ${title}`}
+    iconOnly
+    size="xs"
+    variant="muted"
+    class="ml-auto"
+  >
+    <ChevronRight slot="icon" size="sm" />
+  </Button>
+</div>

@@ -1,0 +1,65 @@
+---
+// Assets
+import Logo from "@/components/assets/Logo.astro";
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+import Button from "@/components/fundations/elements/Button.astro";
+---
+
+<div
+  id="reviewModal"
+  class="fixed inset-0 z-50 items-center justify-center hidden bg-base-950/50 backdrop-blur transition-opacity"
+>
+  <div class="w-full max-w-lg p-8 bg-white">
+    <div class="text-center text-balance">
+      <div class="p-4 rounded-full bg-base-100 w-fit mx-auto">
+        <Logo class="h-8 mx-auto text-accent-500" />
+      </div>
+      <Text
+        tag="h2"
+        variant="displaySM"
+        class="font-serif italic text-base-900 mt-12"
+      >
+        Share your thoughts
+      </Text>
+      <Text tag="p" variant="textSM" class="text-base-500 mt-1">
+        Tell us what you think about this product — your feedback helps others.
+      </Text>
+    </div>
+    <!-- Modal Content: Review Form -->
+    <form class="mt-8 space-y-4">
+      <div>
+        <label for="reviewName" class="text-sm font-medium text-base-500"
+          >Your Name</label
+        >
+        <input
+          type="text"
+          id="first-name"
+          name="first-name"
+          autocomplete="given-name"
+          placeholder="Your name"
+          aria-label="First name"
+          class="block w-full px-4 py-2 text-xs leading-tight align-middle bg-white border border-transparent gap-2 transition duration-300 ease-in-out focus:z-10 h-9 rounded-md text-base-500 ring-1 ring-base-200 placeholder-base-400 focus:border-accent-500 focus:ring-accent-100 focus:ring-2 focus:outline-none shadow-sm"
+        />
+      </div>
+      <div>
+        <label for="reviewText" class="text-sm font-medium text-base-500"
+          >Your Review</label
+        >
+        <textarea
+          id="reviewText"
+          rows="6"
+          required
+          placeholder="Write your review here"
+          class="block w-full px-4 py-2 text-xs leading-tight align-middle bg-white border border-transparent gap-2 transition duration-300 ease-in-out focus:z-10 rounded-md text-base-500 ring-1 ring-base-200 placeholder-base-400 focus:border-accent-500 focus:ring-accent-100 focus:ring-2 focus:outline-none shadow-sm"
+        ></textarea>
+      </div>
+      <div class="flex justify-end gap-2">
+        <Button type="button" id="cancelButton" size="xs" variant="muted">
+          Cancel
+        </Button>
+        <Button type="submit" size="xs" variant="accent"> Submit </Button>
+      </div>
+    </form>
+  </div>
+</div>

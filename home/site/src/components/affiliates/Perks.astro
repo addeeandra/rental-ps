@@ -1,0 +1,102 @@
+---
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Icons
+import Bulb from "@/components/fundations/icons/Bulb.astro";
+import ApiApp from "@/components/fundations/icons/ApiApp.astro";
+import Brain from "@/components/fundations/icons/Brain.astro";
+import Cart from "@/components/fundations/icons/Cart.astro";
+import Clock from "@/components/fundations/icons/Clock.astro";
+import MapPin from "@/components/fundations/icons/MapPin.astro";
+import Edit from "@/components/fundations/icons/Edit.astro";
+import Heart from "@/components/fundations/icons/Heart.astro";
+const affiliatePerks = [
+  {
+    icon: Bulb,
+    title: "Products that inspire",
+    description:
+      "From synths to speakers, promote gear designed for creators, not consumers.",
+  },
+  {
+    icon: ApiApp,
+    title: "Ready-to-use assets",
+    description:
+      "High-res imagery, clips, and brand materials — just drag, drop, and share.",
+  },
+  {
+    icon: Brain,
+    title: "Fast-track support",
+    description:
+      "Have a question or campaign idea? Our team is just a real human away.",
+  },
+  {
+    icon: Cart,
+    title: "Early access to drops",
+    description:
+      "Be first in line when new products or limited editions launch — and promote them before anyone else.",
+  },
+  {
+    icon: Clock,
+    title: "Real-time tracking",
+    description:
+      "Monitor your clicks and commissions with a clean dashboard — no bloat, just data.",
+  },
+  {
+    icon: MapPin,
+    title: "Global reach",
+    description:
+      "Our audience spans the world — your referrals can too. No borders, just beats.",
+  },
+  {
+    icon: Edit,
+    title: "No cap commissions",
+    description:
+      "Earn on every sale you refer. No limits, no thresholds, no fine print.",
+  },
+  {
+    icon: Heart,
+    title: "Creative freedom",
+    description:
+      "Use your voice, your style, your way — we’re here to support, not script.",
+  },
+];
+---
+
+<section>
+  <Wrapper variant="standard" class="py-20 text-center">
+    <Text tag="h2" variant="displaySM" class="font-serif italic text-base-900">
+      Why join?
+    </Text>
+    <dl
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 mt-12"
+    >
+      {
+        affiliatePerks.map((perk) => (
+          <>
+            <div>
+              <dt>
+                <div class="p-2 rounded-full bg-base-50 w-fit mx-auto">
+                  <perk.icon size="sm" class=" text-accent-500" />
+                </div>
+
+                <Text
+                  tag="h3"
+                  variant="textBase"
+                  class="font-semibold text-base-800 mt-12"
+                >
+                  {perk.title}
+                </Text>
+              </dt>
+              <dd>
+                <Text tag="p" variant="textSM" class="mt-1 text-base-500">
+                  {perk.description}
+                </Text>
+              </dd>
+            </div>
+          </>
+        ))
+      }
+    </dl>
+  </Wrapper>
+</section>

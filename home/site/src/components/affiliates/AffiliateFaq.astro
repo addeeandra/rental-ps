@@ -1,0 +1,57 @@
+---
+// Fundations
+import Text from "@/components/fundations/elements/Text.astro";
+import Wrapper from "@/components/fundations/containers/Wrapper.astro";
+// Icons
+import Plus from "@/components/fundations/icons/Plus.astro";
+const faq = [
+  {
+    question: "Siapa saja bisa bergabung?",
+    answer:
+      "Siapapun yang tertarik dengan bisnis sewa PS dapat bergabung.",
+  },
+  {
+    question: "Bagaimana cara bekerjasama?",
+    answer:
+      "Hubungi kami melalui Whatsapp dan informasikan minat Anda untuk kerjasama.",
+  },
+];
+---
+
+<section>
+  <Wrapper variant="standard" class="py-20">
+    <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <Text
+        tag="h2"
+        variant="displaySM"
+        class="font-medium text-base-900 font-serif italic"
+      >
+        Frequently asked questions
+      </Text>
+      <div class="space-y-4 lg:col-span-2">
+        {
+          faq.map((faq) => (
+            <>
+              <details class="group selection:none ">
+                <summary class="flex items-center justify-between text-base cursor-pointer text-base-900 text-balance selection:bg-transparent focus:text-accent-600">
+                  {faq.question}
+                  <Plus
+                    size="sm"
+                    class="transition-transform group-open:rotate-45"
+                  />
+                </summary>
+                <Text
+                  tag="p"
+                  variant="textSM"
+                  class="pb-8 mt-4 text-balance text-base-500"
+                >
+                  {faq.answer}
+                </Text>
+              </details>
+            </>
+          ))
+        }
+      </div>
+    </div>
+  </Wrapper>
+</section>
