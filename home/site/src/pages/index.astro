@@ -55,7 +55,7 @@ const tags = [...new Set(allPosts.map((post) => post.data.tags).flat())].sort();
         >
       </div>
       <div class="mt-12 grid gap-y-2 sm:gap-x-2 grid-cols-1 md:grid-cols-3">
-        {allProducts.slice(2, 5).map((post) => <StoreEntry2 post={post} />)}
+        {allProducts.map((post) => <StoreEntry2 post={post} />)}
       </div>
     </Wrapper>
   </section>

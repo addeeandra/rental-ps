@@ -20,7 +20,7 @@ import ModalScript from "@/components/fundations/scripts/ModalScript.astro";
 
 <BaseLayout>
   <section>
-    <Wrapper variant="standard" class="pb-12 pt-4">
+    <Wrapper variant="standard" class="pb-12 pt-4 lg:pt-12">
       <div class="grid grid-cols-1 gap-2 lg:grid-cols-2 gap-12">
         <div
           class="flex flex-col justify-between order-last h-full lg:order-none"
@@ -65,7 +65,7 @@ import ModalScript from "@/components/fundations/scripts/ModalScript.astro";
                 }
               </ul>
               <Button size="xs" variant="default" class="justify-center mt-8">
-                Purchase
+                Sewa Sekarang
               </Button>
             </div>
             <!-- Tab section -->
@@ -78,7 +78,7 @@ import ModalScript from "@/components/fundations/scripts/ModalScript.astro";
                     class="inline-block py-2 font-medium border-b-2 text-base-900 border-base-500"
                     data-tab="tab1"
                   >
-                    Details
+                    Spesifikasi
                   </button>
                 </li>
                 <li class="-mb-px">
@@ -86,15 +86,7 @@ import ModalScript from "@/components/fundations/scripts/ModalScript.astro";
                     class="inline-block py-2 font-medium"
                     data-tab="shipping"
                   >
-                    Shipping
-                  </button>
-                </li>
-                <li class="-mb-px">
-                  <button
-                    class="inline-block py-2 font-medium"
-                    data-tab="returns"
-                  >
-                    Returns
+                    Pengiriman
                   </button>
                 </li>
                 <li class="-mb-px">
@@ -102,7 +94,7 @@ import ModalScript from "@/components/fundations/scripts/ModalScript.astro";
                     class="inline-block py-2 font-medium"
                     data-tab="reviews"
                   >
-                    Reviews
+                    Testimoni
                   </button>
                 </li>
               </ul>
@@ -131,13 +123,6 @@ import ModalScript from "@/components/fundations/scripts/ModalScript.astro";
                   <section class="py-4">
                     <Text tag="p" variant="textSM" class="undefined">
                       {frontmatter.shipping}
-                    </Text>
-                  </section>
-                </div>
-                <div id="returns" class="hidden tab-content">
-                  <section class="py-4">
-                    <Text tag="p" variant="textSM" class="undefined">
-                      {frontmatter.returns}
                     </Text>
                   </section>
                 </div>
@@ -246,7 +231,7 @@ import ModalScript from "@/components/fundations/scripts/ModalScript.astro";
         variant="textLG"
         class="text-base-900 text-balance lg:pr-12"
       >
-        Related products
+        Produk Lain
       </Text>
       <div class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {allProducts.slice(0, 4).map((post) => <StoreEntry2 post={post} />)}

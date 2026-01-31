@@ -16,13 +16,7 @@
         "checkout": {
           "type": "string"
         },
-        "returns": {
-          "type": "string"
-        },
         "shipping": {
-          "type": "string"
-        },
-        "license": {
           "type": "string"
         },
         "description": {
@@ -110,7 +104,6 @@
         "category",
         "price",
         "checkout",
-        "license",
         "description",
         "highlights",
         "thumbnail",

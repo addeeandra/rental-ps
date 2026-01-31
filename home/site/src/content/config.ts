@@ -7,9 +7,7 @@ const store = defineCollection({
       category: z.string(),
       price: z.string(),
       checkout: z.string(),
-      returns: z.string().optional(),
       shipping: z.string().optional(),
-      license: z.string(),
       description: z.string(),
       highlights: z.array(z.string()),
       thumbnail: z.object({
