@@ -15,6 +15,12 @@ thumbnail:
 images:
   - url: "/src/images/products/ps-3.png"
     alt: "PLaystation 3"
+  - url: "/src/images/products/playstation-3.jpg"
+    alt: "PLaystation 3"
+  - url: "/src/images/products/playstation-4.jpg"
+    alt: "PLaystation 4"
+  - url: "/src/images/products/playstation-4-pro.jpg"
+    alt: "PLaystation 4 Pro"
 testimonials:
   - name: "John Doe"
     date: "2026-01-10"
