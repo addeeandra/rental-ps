@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Enums\RentalDuration;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -32,6 +31,10 @@ class ProductStoreRequest extends FormRequest
             'rental_price' => ['required', 'numeric', 'min:0'],
             'uom' => ['required', 'string', 'max:255'],
             'rental_duration' => ['required', 'string', Rule::in(['hour', 'day', 'week', 'month'])],
+            'components' => ['nullable', 'array', 'max:2'],
+            'components.*.inventory_item_id' => ['required', 'exists:inventory_items,id'],
+            'components.*.slot' => ['required', 'integer', 'in:1,2'],
+            'components.*.qty_per_product' => ['required', 'numeric', 'min:0.001'],
         ];
     }
 
@@ -54,6 +57,13 @@ class ProductStoreRequest extends FormRequest
             'uom.required' => 'Unit of measure is required.',
             'rental_duration.required' => 'Rental duration is required.',
             'rental_duration.in' => 'Invalid rental duration selected.',
+            'components.max' => 'A product can have at most 2 components.',
+            'components.*.inventory_item_id.required' => 'Inventory item is required for each component.',
+            'components.*.inventory_item_id.exists' => 'The selected inventory item does not exist.',
+            'components.*.slot.required' => 'Component slot is required.',
+            'components.*.slot.in' => 'Component slot must be 1 or 2.',
+            'components.*.qty_per_product.required' => 'Quantity per product is required for each component.',
+            'components.*.qty_per_product.min' => 'Quantity per product must be greater than 0.',
         ];
     }
 }

@@ -15,13 +15,17 @@ import { dashboard } from '@/routes';
 import type { NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import {
+    ArrowLeftRight,
     BookOpen,
+    Box,
+    ClipboardList,
     FileBox,
     LayoutGrid,
     Package,
     Tags,
     Truck,
     Users,
+    Warehouse,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
@@ -48,7 +52,7 @@ const mainNavItems: NavItem[] = [
         icon: Truck,
     },
     {
-        group: 'Inventories',
+        group: 'Catalog',
     },
     {
         title: 'Categories',
@@ -59,6 +63,29 @@ const mainNavItems: NavItem[] = [
         title: 'Products',
         href: '/products',
         icon: Package,
+    },
+    {
+        group: 'Inventory',
+    },
+    {
+        title: 'Warehouses',
+        href: '/warehouses',
+        icon: Warehouse,
+    },
+    {
+        title: 'Items',
+        href: '/inventory-items',
+        icon: Box,
+    },
+    {
+        title: 'Levels',
+        href: '/stock-levels',
+        icon: ClipboardList,
+    },
+    {
+        title: 'Movements',
+        href: '/stock-movements',
+        icon: ArrowLeftRight,
     },
     {
         group: 'Orders',

@@ -6,6 +6,8 @@ use App\Enums\RentalDuration;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
@@ -74,7 +76,7 @@ class Product extends Model
             $number = 1;
         }
 
-        return 'PRD-' . str_pad($number, 4, '0', STR_PAD_LEFT);
+        return 'PRD-'.str_pad($number, 4, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -83,5 +85,24 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the product components.
+     */
+    public function productComponents(): HasMany
+    {
+        return $this->hasMany(ProductComponent::class)->orderBy('slot');
+    }
+
+    /**
+     * Get the inventory items used as components.
+     */
+    public function inventoryItems(): BelongsToMany
+    {
+        return $this->belongsToMany(InventoryItem::class, 'product_components')
+            ->withPivot(['slot', 'qty_per_product'])
+            ->withTimestamps()
+            ->orderByPivot('slot');
     }
 }

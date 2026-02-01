@@ -1,6 +1,10 @@
 <laravel-boost-guidelines>
 === foundation rules ===
 
+# Laravel Project Directory
+
+See the project in `core` folder.
+
 # Laravel Boost Guidelines
 
 The Laravel Boost guidelines are specifically curated by Laravel maintainers for this application. These guidelines should be followed closely to enhance the user's satisfaction building Laravel applications.

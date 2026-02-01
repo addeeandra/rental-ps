@@ -3,9 +3,13 @@
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\StockLevelController;
+use App\Http\Controllers\StockMovementController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\WarehouseController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,8 +23,8 @@ Route::get('dashboard/operations', [DashboardController::class, 'operations'])->
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Redirect old partners route to customers
-    Route::get('partners', fn() => redirect()->route('customers.index'));
-    
+    Route::get('partners', fn () => redirect()->route('customers.index'));
+
     Route::resource('customers', CustomerController::class)->except(['create', 'edit']);
     Route::get('customers/template', [CustomerController::class, 'downloadTemplate'])->name('customers.template');
     Route::post('customers/import', [CustomerController::class, 'import'])->name('customers.import');
@@ -36,6 +40,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('products', ProductController::class)->except(['show', 'create', 'edit']);
     Route::get('products/template', [ProductController::class, 'downloadTemplate'])->name('products.template');
     Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
+
+    // Inventory management
+    Route::resource('warehouses', WarehouseController::class)->except(['show', 'create', 'edit']);
+    Route::resource('inventory-items', InventoryItemController::class)->except(['show', 'create', 'edit']);
+    Route::resource('stock-movements', StockMovementController::class)->only(['index', 'store']);
+    Route::get('stock-levels', [StockLevelController::class, 'index'])->name('stock-levels.index');
 
     Route::resource('invoices', InvoiceController::class)->except(['show', 'create']);
     Route::patch('invoices/{invoice}/payment', [InvoiceController::class, 'updatePayment'])->name('invoices.payment');

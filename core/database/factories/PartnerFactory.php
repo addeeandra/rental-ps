@@ -18,7 +18,7 @@ class PartnerFactory extends Factory
     {
         $types = ['Client', 'Supplier', 'Supplier & Client'];
         $provinces = ['Jawa Timur', 'Jawa Barat', 'Jawa Tengah', 'DKI Jakarta', 'Bali'];
-        
+
         return [
             'type' => fake()->randomElement($types),
             'name' => fake()->company(),
@@ -35,5 +35,35 @@ class PartnerFactory extends Factory
             'website' => fake()->optional()->url(),
             'notes' => fake()->optional()->sentence(),
         ];
+    }
+
+    /**
+     * Indicate that the partner is a client.
+     */
+    public function client(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'Client',
+        ]);
+    }
+
+    /**
+     * Indicate that the partner is a supplier.
+     */
+    public function supplier(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'Supplier',
+        ]);
+    }
+
+    /**
+     * Indicate that the partner is both supplier and client.
+     */
+    public function supplierAndClient(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'type' => 'Supplier & Client',
+        ]);
     }
 }

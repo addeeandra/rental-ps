@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProductStoreRequest;
 use App\Http\Requests\ProductUpdateRequest;
 use App\Models\Category;
+use App\Models\InventoryItem;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,7 +21,7 @@ class ProductController extends Controller
      */
     public function index(Request $request): Response
     {
-        $query = Product::query()->with('category');
+        $query = Product::query()->with(['category', 'productComponents.inventoryItem']);
 
         // Search
         if ($search = $request->input('search')) {
@@ -44,9 +45,17 @@ class ProductController extends Controller
             ->orderBy('name')
             ->get();
 
+        // Get inventory items for component selection
+        $inventoryItems = InventoryItem::select('id', 'sku', 'name', 'owner_id', 'unit')
+            ->with('owner:id,code,name')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
         return Inertia::render('products/Index', [
             'products' => $products,
             'categories' => $categories,
+            'inventoryItems' => $inventoryItems,
             'filters' => [
                 'search' => $search,
                 'category_id' => $categoryId,
@@ -59,7 +68,22 @@ class ProductController extends Controller
      */
     public function store(ProductStoreRequest $request): RedirectResponse
     {
-        Product::create($request->validated());
+        $validated = $request->validated();
+        $components = $validated['components'] ?? [];
+        unset($validated['components']);
+
+        $product = Product::create($validated);
+
+        // Sync product components
+        if (! empty($components)) {
+            foreach ($components as $component) {
+                $product->productComponents()->create([
+                    'inventory_item_id' => $component['inventory_item_id'],
+                    'slot' => $component['slot'],
+                    'qty_per_product' => $component['qty_per_product'],
+                ]);
+            }
+        }
 
         return to_route('products.index')->with('success', 'Product created successfully.');
     }
@@ -69,7 +93,24 @@ class ProductController extends Controller
      */
     public function update(ProductUpdateRequest $request, Product $product): RedirectResponse
     {
-        $product->update($request->validated());
+        $validated = $request->validated();
+        $components = $validated['components'] ?? [];
+        unset($validated['components']);
+
+        $product->update($validated);
+
+        // Sync product components (delete existing, create new)
+        $product->productComponents()->delete();
+
+        if (! empty($components)) {
+            foreach ($components as $component) {
+                $product->productComponents()->create([
+                    'inventory_item_id' => $component['inventory_item_id'],
+                    'slot' => $component['slot'],
+                    'qty_per_product' => $component['qty_per_product'],
+                ]);
+            }
+        }
 
         return to_route('products.index')->with('success', 'Product updated successfully.');
     }
@@ -96,7 +137,7 @@ class ProductController extends Controller
 
         $callback = function () {
             $file = fopen('php://output', 'w');
-            
+
             // Add BOM for UTF-8
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
 
@@ -152,7 +193,7 @@ class ProductController extends Controller
 
         $file = $request->file('file');
         $handle = fopen($file->getRealPath(), 'r');
-        
+
         // Skip BOM if present
         $bom = fread($handle, 3);
         if ($bom !== chr(0xEF).chr(0xBB).chr(0xBF)) {
@@ -161,8 +202,8 @@ class ProductController extends Controller
 
         // Read headers
         $headers = fgetcsv($handle, 0, ';');
-        
-        if (!$headers) {
+
+        if (! $headers) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid CSV file format.',
@@ -176,7 +217,7 @@ class ProductController extends Controller
 
         while (($row = fgetcsv($handle, 0, ';')) !== false) {
             $rowNumber++;
-            
+
             // Skip empty rows
             if (empty(array_filter($row))) {
                 continue;
@@ -186,13 +227,13 @@ class ProductController extends Controller
             $data = array_combine($headers, $row);
 
             // Transform rental duration to lowercase for case-insensitive handling
-            if (!empty($data['Rental Duration'])) {
+            if (! empty($data['Rental Duration'])) {
                 $data['Rental Duration'] = strtolower(trim($data['Rental Duration']));
             }
 
             // Find or create category
             $category = null;
-            if (!empty($data['Category'])) {
+            if (! empty($data['Category'])) {
                 $category = Category::firstOrCreate(['name' => trim($data['Category'])]);
             }
 
@@ -216,10 +257,10 @@ class ProductController extends Controller
                 'uom' => ['required', 'string', 'max:255'],
                 'rental_duration' => ['required', 'string', 'in:hour,day,week,month'],
             ], [
-                'code.unique' => 'Product code already exists: ' . ($data['Code'] ?? ''),
+                'code.unique' => 'Product code already exists: '.($data['Code'] ?? ''),
                 'name.required' => 'Product name is required.',
                 'category_id.required' => 'Category is required.',
-                'category_id.exists' => 'Category not found: ' . ($data['Category'] ?? ''),
+                'category_id.exists' => 'Category not found: '.($data['Category'] ?? ''),
                 'sales_price.required' => 'Sales price is required.',
                 'sales_price.min' => 'Sales price must be at least 0.',
                 'rental_price.required' => 'Rental price is required.',
@@ -236,6 +277,7 @@ class ProductController extends Controller
                     'name' => $data['Name'] ?? 'Unknown',
                     'errors' => $validator->errors()->all(),
                 ];
+
                 continue;
             }
 
@@ -257,7 +299,7 @@ class ProductController extends Controller
                 $errors[] = [
                     'row' => $rowNumber,
                     'name' => $data['Name'] ?? 'Unknown',
-                    'errors' => ['Failed to create product: ' . $e->getMessage()],
+                    'errors' => ['Failed to create product: '.$e->getMessage()],
                 ];
             }
         }

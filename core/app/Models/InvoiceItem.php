@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class InvoiceItem extends Model
 {
@@ -48,7 +49,7 @@ class InvoiceItem extends Model
         parent::boot();
 
         static::creating(function ($item) {
-            if (!isset($item->total)) {
+            if (! isset($item->total)) {
                 $item->total = $item->quantity * $item->unit_price;
             }
         });
@@ -84,5 +85,13 @@ class InvoiceItem extends Model
         }
 
         return $this->description;
+    }
+
+    /**
+     * Get the invoice item components (for inventory tracking and revenue sharing).
+     */
+    public function invoiceItemComponents(): HasMany
+    {
+        return $this->hasMany(InvoiceItemComponent::class);
     }
 }
