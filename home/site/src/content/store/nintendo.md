@@ -7,8 +7,9 @@ title: Nintendo Switch Oled
 description: Nintendo Switch adalah konsol hybrid yang fleksibel, main di TV atau mode genggam kapan saja. Joy-Con dapat dilepas dengan motion control, baterai tahan lama, dan dukungan multiplayer lokal maupun online. Cocok untuk hiburan keluarga, perjalanan, dan sesi gaming santai.
 shipping: Biaya antar-jemput Rp25.000 sampai Rp35.000 untuk wilayah Surabaya, Sidoarjo dan sekitarnya.
 highlights:
-  - "Up to 9 hours of battery life (model dependent)"
-  - "Detachable Joy-Con controllers with motion controls"
+  - "Battery: Up to 9 hours of battery life"
+  - "Screen: 7-inch OLED screen, 1280x720 resolution (720p in handheld, 1080p docked)."
+  - "Audio: 3.5mm 4-pole stereo (CTIA standard)"
 thumbnail:
   url: "/src/images/products/nintendo.png"
   alt: "Nintendo Switch"
