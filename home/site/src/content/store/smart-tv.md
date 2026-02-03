@@ -13,14 +13,14 @@ highlights:
   - "2 port HDMI ada 1 port HDMI eARC (ARC)"
   - "1 port Optical (Digital Audio), 1 port eARC (ARC)"
 thumbnail:
-  url: "/src/images/products/smart-tv-3.jpg"
+  url: "/src/images/products/tv_3_nobg.png"
   alt: "Smart TV 32 inch"
 images:
-  - url: "/src/images/products/smart-tv-3.jpg"
+  - url: "/src/images/products/tv_3_nobg.png"
     alt: "Smart TV 32 inch"
-  - url: "/src/images/products/smart-tv-2.jpg"
+  - url: "/src/images/products/tv_2_nobg.png"
     alt: "Smart TV 32 inch"
-  - url: "/src/images/products/smart-tv-1.jpg"
+  - url: "/src/images/products/tv_1_nobg.png"
     alt: "Smart TV 32 inch"
 testimonials:
   - name: "John Doe"
