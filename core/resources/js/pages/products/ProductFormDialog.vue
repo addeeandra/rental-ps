@@ -16,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { Category, InventoryItem, Product } from '@/types/models';
 import { useForm } from '@inertiajs/vue3';
 import { ChevronDown, ChevronUp, X } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
 interface Props {
     open: boolean | Product;
@@ -68,7 +68,13 @@ const form = useForm<{
     rental_price: props.product?.rental_price?.toString() || '0',
     uom: props.product?.uom || 'pcs',
     rental_duration: props.product?.rental_duration || 'day',
-    components: [],
+    components: props.product
+        ? (props.product.product_components || []).map((pc) => ({
+              inventory_item_id: pc.inventory_item_id,
+              slot: pc.slot,
+              qty_per_product: pc.qty_per_product.toString(),
+          }))
+        : [],
 });
 
 function addComponent(slot: number) {
@@ -102,36 +108,6 @@ function submit() {
         });
     }
 }
-
-watch(
-    () => props.open,
-    (value) => {
-        if (value && props.product) {
-            form.code = props.product.code;
-            form.name = props.product.name;
-            form.description = props.product.description || '';
-            form.category_id = props.product.category_id?.toString() || '';
-            form.sales_price = props.product.sales_price?.toString() || '0';
-            form.rental_price = props.product.rental_price?.toString() || '0';
-            form.uom = props.product.uom;
-            form.rental_duration = props.product.rental_duration;
-
-            // Load existing components
-            form.components = (props.product.product_components || []).map(
-                (pc) => ({
-                    inventory_item_id: pc.inventory_item_id,
-                    slot: pc.slot,
-                    qty_per_product: pc.qty_per_product.toString(),
-                }),
-            );
-            showComponents.value = form.components.length > 0;
-        } else if (!value) {
-            form.reset();
-            form.components = [];
-            showComponents.value = false;
-        }
-    },
-);
 </script>
 
 <template>

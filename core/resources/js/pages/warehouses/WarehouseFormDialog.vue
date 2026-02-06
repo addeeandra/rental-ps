@@ -102,7 +102,9 @@ watch(
                     <div class="grid gap-2">
                         <Label for="code">
                             Code
-                            <span class="text-xs font-normal text-muted-foreground">
+                            <span
+                                class="text-xs font-normal text-muted-foreground"
+                            >
                                 (auto-generated if empty)
                             </span>
                         </Label>
@@ -139,7 +141,7 @@ watch(
                     <div class="flex items-center gap-2">
                         <Checkbox
                             id="is_active"
-                            :checked="form.is_active"
+                            :default-value="form.is_active"
                             @update:checked="form.is_active = $event"
                         />
                         <Label for="is_active" class="cursor-pointer">

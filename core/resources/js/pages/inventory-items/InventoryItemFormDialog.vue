@@ -78,7 +78,8 @@ watch(
             form.owner_id = props.item.owner_id?.toString() || '';
             form.unit = props.item.unit || '';
             form.cost = props.item.cost?.toString() || '0';
-            form.default_share_percent = props.item.default_share_percent?.toString() || '0';
+            form.default_share_percent =
+                props.item.default_share_percent?.toString() || '0';
             form.is_active = props.item.is_active;
         } else if (!value) {
             form.reset();
@@ -109,7 +110,9 @@ watch(
                         <div class="grid gap-2">
                             <Label for="sku">
                                 SKU
-                                <span class="text-xs font-normal text-muted-foreground">
+                                <span
+                                    class="text-xs font-normal text-muted-foreground"
+                                >
                                     (auto-generated if empty)
                                 </span>
                             </Label>
@@ -181,7 +184,9 @@ watch(
                         <div class="grid gap-2">
                             <Label for="default_share_percent">
                                 Default Share %
-                                <span class="text-xs font-normal text-muted-foreground">
+                                <span
+                                    class="text-xs font-normal text-muted-foreground"
+                                >
                                     (revenue share)
                                 </span>
                             </Label>
@@ -194,14 +199,16 @@ watch(
                                 max="100"
                                 placeholder="0"
                             />
-                            <InputError :message="form.errors.default_share_percent" />
+                            <InputError
+                                :message="form.errors.default_share_percent"
+                            />
                         </div>
                     </div>
 
                     <div class="flex items-center gap-2">
                         <Checkbox
                             id="is_active"
-                            :checked="form.is_active"
+                            :default-value="form.is_active"
                             @update:checked="form.is_active = $event"
                         />
                         <Label for="is_active" class="cursor-pointer">
