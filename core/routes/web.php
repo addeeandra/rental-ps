@@ -50,7 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
     Route::patch('invoices/{invoice}/payment', [InvoiceController::class, 'updatePayment'])->name('invoices.payment');
     Route::patch('invoices/{invoice}/components/{component}/share', [InvoiceController::class, 'updateComponentShare'])->name('invoices.components.share');
-    Route::get('invoices/{ invoice}/preview', [InvoiceController::class, 'preview'])->name('invoices.preview');
+    Route::get('invoices/{invoice}/preview', [InvoiceController::class, 'preview'])->name('invoices.preview');
     Route::get('invoices/{invoice}/preview-html', [InvoiceController::class, 'previewHtml'])->name('invoices.preview-html');
 });
 

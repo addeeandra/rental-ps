@@ -30,7 +30,7 @@ import type {
     Warehouse,
 } from '@/types/models';
 import { router, useForm } from '@inertiajs/vue3';
-import { ChevronDown, ChevronUp, Plus, Trash2, X } from 'lucide-vue-next';
+import { ChevronDown, ChevronUp, Plus, Trash2 } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {
@@ -766,9 +766,7 @@ onMounted(() => {
                                                 class="ml-1 text-xs text-muted-foreground"
                                             >
                                                 -
-                                                {{
-                                                    item.components.length
-                                                }}
+                                                {{ item.components.length }}
                                                 configured
                                             </span>
                                         </span>
@@ -805,9 +803,7 @@ onMounted(() => {
                                                             :key="invItem.id"
                                                             :value="invItem.id"
                                                         >
-                                                            {{
-                                                                invItem.name
-                                                            }}
+                                                            {{ invItem.name }}
                                                             ({{ invItem.sku }})
                                                         </SelectItem>
                                                     </SelectContent>
@@ -877,7 +873,7 @@ onMounted(() => {
                                             <div class="flex items-end">
                                                 <Button
                                                     type="button"
-                                                    variant="ghost"
+                                                    variant="destructive"
                                                     size="icon"
                                                     class="h-9 w-9"
                                                     @click="
@@ -887,7 +883,7 @@ onMounted(() => {
                                                         )
                                                     "
                                                 >
-                                                    <X class="h-4 w-4" />
+                                                    <Trash2 class="h-4 w-4" />
                                                 </Button>
                                             </div>
                                         </div>

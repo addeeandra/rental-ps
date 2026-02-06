@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import type { Category, InventoryItem, Product } from '@/types/models';
 import { useForm } from '@inertiajs/vue3';
-import { ChevronDown, ChevronUp, X } from 'lucide-vue-next';
+import { ChevronDown, ChevronUp, Trash2 } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
 
 interface Props {
@@ -412,12 +412,12 @@ function submit() {
 
                                     <Button
                                         type="button"
-                                        variant="ghost"
+                                        variant="destructive"
                                         size="icon"
-                                        class="mt-8"
+                                        class="mt-6"
                                         @click="removeComponent(index)"
                                     >
-                                        <X class="h-4 w-4" />
+                                        <Trash2 class="h-4 w-4" />
                                     </Button>
                                 </div>
                             </div>
@@ -530,9 +530,9 @@ function submit() {
 
                                     <Button
                                         type="button"
-                                        variant="ghost"
+                                        variant="destructive"
                                         size="icon"
-                                        class="mt-8"
+                                        class="mt-6"
                                         @click="
                                             removeComponent(
                                                 form.components.indexOf(
@@ -541,7 +541,7 @@ function submit() {
                                             )
                                         "
                                     >
-                                        <X class="h-4 w-4" />
+                                        <Trash2 class="h-4 w-4" />
                                     </Button>
                                 </div>
                             </div>
