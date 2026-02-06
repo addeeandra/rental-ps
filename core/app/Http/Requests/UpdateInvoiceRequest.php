@@ -44,6 +44,11 @@ class UpdateInvoiceRequest extends FormRequest
             'line_items.*.description' => ['required', 'string', 'max:500'],
             'line_items.*.quantity' => ['required', 'numeric', 'min:0.01'],
             'line_items.*.unit_price' => ['required', 'numeric', 'min:0'],
+            'line_items.*.components' => ['nullable', 'array'],
+            'line_items.*.components.*.inventory_item_id' => ['required', 'exists:inventory_items,id'],
+            'line_items.*.components.*.warehouse_id' => ['required', 'exists:warehouses,id'],
+            'line_items.*.components.*.qty' => ['required', 'numeric', 'min:0.001'],
+            'line_items.*.components.*.share_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
         ];
     }
 
@@ -58,10 +63,10 @@ class UpdateInvoiceRequest extends FormRequest
                 $this->rental_end_date &&
                 $this->delivery_time &&
                 $this->return_time) {
-                
+
                 try {
-                    $deliveryDateTime = Carbon::parse($this->rental_start_date . ' ' . $this->delivery_time);
-                    $returnDateTime = Carbon::parse($this->rental_end_date . ' ' . $this->return_time);
+                    $deliveryDateTime = Carbon::parse($this->rental_start_date.' '.$this->delivery_time);
+                    $returnDateTime = Carbon::parse($this->rental_end_date.' '.$this->return_time);
 
                     if ($returnDateTime->lte($deliveryDateTime)) {
                         $validator->errors()->add(

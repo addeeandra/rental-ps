@@ -30,7 +30,7 @@ class InvoiceItemComponent extends Model
     protected function casts(): array
     {
         return [
-            'qty' => 'decimal:3',
+            'qty' => 'decimal:2',
             'share_percent' => 'decimal:2',
             'share_amount' => 'decimal:2',
         ];

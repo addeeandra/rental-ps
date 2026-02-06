@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
         // Create or find test user
         $user = User::firstOrCreate(
             ['email' => 'test@example.com'],
-            ['name' => 'Test User']
+            ['name' => 'Test User', 'password' => bcrypt('password')]
         );
 
         // Seed invoices with items
@@ -29,13 +29,13 @@ class DatabaseSeeder extends Seeder
                 // Create 1-5 line items for each invoice
                 $itemCount = rand(1, 5);
                 $products = Product::inRandomOrder()->take($itemCount)->get();
-                
+
                 foreach ($products as $index => $product) {
                     $quantity = rand(1, 10);
-                    $unitPrice = $invoice->order_type === 'sales' 
-                        ? $product->sales_price 
+                    $unitPrice = $invoice->order_type === 'sales'
+                        ? $product->sales_price
                         : $product->rental_price;
-                    
+
                     InvoiceItem::create([
                         'invoice_id' => $invoice->id,
                         'product_id' => $product->id,
@@ -46,7 +46,7 @@ class DatabaseSeeder extends Seeder
                         'sort_order' => $index,
                     ]);
                 }
-                
+
                 // Recalculate totals
                 $invoice->calculateTotals();
                 $invoice->updateStatus();

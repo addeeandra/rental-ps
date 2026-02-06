@@ -20,7 +20,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { debounce } from '@/lib/utils';
 import type { BreadcrumbItem } from '@/types';
 import { PaginatedData } from '@/types/laravel';
-import type { Category, Product } from '@/types/models';
+import type { Category, InventoryItem, Product } from '@/types/models';
 import { Head, router, usePage } from '@inertiajs/vue3';
 import { Download, MoreVertical, Plus, Search, Upload } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
@@ -31,6 +31,7 @@ import ProductFormDialog from './ProductFormDialog.vue';
 interface Props {
     products: PaginatedData<Product>;
     categories: Category[];
+    inventoryItems: InventoryItem[];
     filters: {
         search?: string;
         category_id?: number;
@@ -365,6 +366,7 @@ function downloadTemplate() {
         <ProductFormDialog
             v-model:open="showCreateDialog"
             :categories="categories"
+            :inventory-items="inventoryItems"
             @success="showCreateDialog = false"
         />
 
@@ -373,6 +375,7 @@ function downloadTemplate() {
             v-model:open="editingProduct"
             :product="editingProduct"
             :categories="categories"
+            :inventory-items="inventoryItems"
             @success="editingProduct = null"
             @cancel="editingProduct = null"
         />

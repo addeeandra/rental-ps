@@ -28,7 +28,7 @@ class ProductComponent extends Model
     {
         return [
             'slot' => 'integer',
-            'qty_per_product' => 'decimal:3',
+            'qty_per_product' => 'decimal:2',
         ];
     }
 

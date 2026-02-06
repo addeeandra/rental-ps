@@ -41,15 +41,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('products/template', [ProductController::class, 'downloadTemplate'])->name('products.template');
     Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
 
-    // Inventory management
     Route::resource('warehouses', WarehouseController::class)->except(['show', 'create', 'edit']);
     Route::resource('inventory-items', InventoryItemController::class)->except(['show', 'create', 'edit']);
     Route::resource('stock-movements', StockMovementController::class)->only(['index', 'store']);
     Route::get('stock-levels', [StockLevelController::class, 'index'])->name('stock-levels.index');
 
     Route::resource('invoices', InvoiceController::class)->except(['show', 'create']);
+    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
     Route::patch('invoices/{invoice}/payment', [InvoiceController::class, 'updatePayment'])->name('invoices.payment');
-    Route::get('invoices/{invoice}/preview', [InvoiceController::class, 'preview'])->name('invoices.preview');
+    Route::patch('invoices/{invoice}/components/{component}/share', [InvoiceController::class, 'updateComponentShare'])->name('invoices.components.share');
+    Route::get('invoices/{ invoice}/preview', [InvoiceController::class, 'preview'])->name('invoices.preview');
     Route::get('invoices/{invoice}/preview-html', [InvoiceController::class, 'previewHtml'])->name('invoices.preview-html');
 });
 

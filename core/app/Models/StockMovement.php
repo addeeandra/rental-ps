@@ -36,7 +36,7 @@ class StockMovement extends Model
     protected function casts(): array
     {
         return [
-            'quantity' => 'decimal:0',
+            'quantity' => 'decimal:2',
             'reason' => StockMovementReason::class,
         ];
     }

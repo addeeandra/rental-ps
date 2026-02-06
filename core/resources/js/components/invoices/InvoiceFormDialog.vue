@@ -21,15 +21,24 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { formatCurrency } from '@/composables/useFormatters';
 import PartnerFormDialog from '@/pages/partners/PartnerFormDialog.vue';
-import type { Invoice, OrderType, Partner, Product } from '@/types/models';
+import type {
+    InventoryItem,
+    Invoice,
+    OrderType,
+    Partner,
+    Product,
+    Warehouse,
+} from '@/types/models';
 import { router, useForm } from '@inertiajs/vue3';
-import { Plus, Trash2 } from 'lucide-vue-next';
+import { ChevronDown, ChevronUp, Plus, Trash2, X } from 'lucide-vue-next';
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {
     invoice?: Invoice | null;
     partners: Partner[];
     products: Product[];
+    warehouses: Warehouse[];
+    inventoryItems: InventoryItem[];
     defaultInvoiceTerms?: string | null;
     defaultInvoiceNotes?: string | null;
 }
@@ -65,11 +74,19 @@ const calculateDueDate = (invoiceDate: string): string => {
     return date.toISOString().split('T')[0];
 };
 
+interface LineItemComponent {
+    inventory_item_id: number;
+    warehouse_id: number;
+    qty: number;
+    share_percent?: number | null;
+}
+
 interface LineItem {
     product_id: number | null;
     description: string;
     quantity: number;
     unit_price: number;
+    components: LineItemComponent[];
 }
 
 const form = useForm({
@@ -90,7 +107,13 @@ const form = useForm({
     tax_amount: '0',
     shipping_fee: '0',
     line_items: [
-        { product_id: null, description: '', quantity: 1, unit_price: 0 },
+        {
+            product_id: null,
+            description: '',
+            quantity: 1,
+            unit_price: 0,
+            components: [],
+        },
     ] as LineItem[],
 });
 
@@ -167,6 +190,7 @@ function addLineItem() {
         description: '',
         quantity: 1,
         unit_price: 0,
+        components: [],
     });
 }
 
@@ -187,12 +211,65 @@ function onProductChange(index: number) {
                 form.order_type === 'sales'
                     ? product.sales_price
                     : product.rental_price;
+
+            // Auto-populate components from product if available
+            if (
+                product.product_components &&
+                product.product_components.length > 0
+            ) {
+                // Get default warehouse (first active warehouse)
+                const defaultWarehouse = props.warehouses.find(
+                    (w) => w.is_active,
+                );
+
+                item.components = product.product_components.map((pc) => ({
+                    inventory_item_id: pc.inventory_item_id,
+                    warehouse_id:
+                        defaultWarehouse?.id || props.warehouses[0]?.id || 0,
+                    qty: pc.qty_per_product,
+                    share_percent: null, // Will use default from inventory item
+                }));
+            } else {
+                item.components = [];
+            }
         }
+    } else {
+        // If no product selected, clear components
+        item.components = [];
     }
 }
 
 function handlePartnerCreated() {
     router.reload({ only: ['partners'] });
+}
+
+// Track which line items have components expanded
+const expandedComponents = ref<Set<number>>(new Set());
+
+function toggleComponentsExpanded(index: number) {
+    if (expandedComponents.value.has(index)) {
+        expandedComponents.value.delete(index);
+    } else {
+        expandedComponents.value.add(index);
+    }
+}
+
+function addComponent(lineItemIndex: number) {
+    const item = form.line_items[lineItemIndex];
+    if (item.components.length < 2) {
+        const defaultWarehouse =
+            props.warehouses.find((w) => w.is_active) || props.warehouses[0];
+        item.components.push({
+            inventory_item_id: 0,
+            warehouse_id: defaultWarehouse?.id || 0,
+            qty: 1,
+            share_percent: null,
+        });
+    }
+}
+
+function removeComponent(lineItemIndex: number, componentIndex: number) {
+    form.line_items[lineItemIndex].components.splice(componentIndex, 1);
 }
 
 function submit() {
@@ -236,6 +313,7 @@ onMounted(() => {
                 description: '',
                 quantity: 1,
                 unit_price: 0,
+                components: [],
             },
         ];
     } else {
@@ -285,6 +363,7 @@ onMounted(() => {
                 description: item.description,
                 quantity: Number(item.quantity),
                 unit_price: Number(item.unit_price),
+                components: [], // Components will be loaded separately if needed
             }));
         } else {
             form.line_items = [
@@ -293,6 +372,7 @@ onMounted(() => {
                     description: '',
                     quantity: 1,
                     unit_price: 0,
+                    components: [],
                 },
             ];
         }
@@ -659,6 +739,178 @@ onMounted(() => {
                                         )
                                     }}
                                 </span>
+                            </div>
+
+                            <!-- Components Section (Optional) -->
+                            <div class="md:col-span-5">
+                                <div class="mt-2 border-t pt-2">
+                                    <button
+                                        type="button"
+                                        class="flex w-full items-center gap-2 text-sm font-medium hover:underline"
+                                        @click="toggleComponentsExpanded(index)"
+                                    >
+                                        <component
+                                            :is="
+                                                expandedComponents.has(index)
+                                                    ? ChevronUp
+                                                    : ChevronDown
+                                            "
+                                            class="h-4 w-4"
+                                        />
+                                        <span>
+                                            Components (Optional)
+                                            <span
+                                                v-if="
+                                                    item.components.length > 0
+                                                "
+                                                class="ml-1 text-xs text-muted-foreground"
+                                            >
+                                                -
+                                                {{
+                                                    item.components.length
+                                                }}
+                                                configured
+                                            </span>
+                                        </span>
+                                    </button>
+
+                                    <div
+                                        v-if="expandedComponents.has(index)"
+                                        class="mt-3 space-y-3"
+                                    >
+                                        <div
+                                            v-for="(
+                                                component, compIndex
+                                            ) in item.components"
+                                            :key="compIndex"
+                                            class="grid gap-2 rounded-lg border bg-muted/30 p-3 md:grid-cols-[1fr,1fr,100px,120px,40px]"
+                                        >
+                                            <div class="space-y-1">
+                                                <Label class="text-xs"
+                                                    >Inventory Item *</Label
+                                                >
+                                                <Select
+                                                    v-model="
+                                                        component.inventory_item_id
+                                                    "
+                                                >
+                                                    <SelectTrigger class="h-9">
+                                                        <SelectValue
+                                                            placeholder="Select item"
+                                                        />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem
+                                                            v-for="invItem in inventoryItems"
+                                                            :key="invItem.id"
+                                                            :value="invItem.id"
+                                                        >
+                                                            {{
+                                                                invItem.name
+                                                            }}
+                                                            ({{ invItem.sku }})
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            <div class="space-y-1">
+                                                <Label class="text-xs"
+                                                    >Warehouse *</Label
+                                                >
+                                                <Select
+                                                    v-model="
+                                                        component.warehouse_id
+                                                    "
+                                                >
+                                                    <SelectTrigger class="h-9">
+                                                        <SelectValue
+                                                            placeholder="Select warehouse"
+                                                        />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem
+                                                            v-for="warehouse in warehouses"
+                                                            :key="warehouse.id"
+                                                            :value="
+                                                                warehouse.id
+                                                            "
+                                                        >
+                                                            {{ warehouse.name }}
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            <div class="space-y-1">
+                                                <Label class="text-xs"
+                                                    >Qty *</Label
+                                                >
+                                                <Input
+                                                    v-model.number="
+                                                        component.qty
+                                                    "
+                                                    type="number"
+                                                    step="0.001"
+                                                    min="0.001"
+                                                    class="h-9"
+                                                />
+                                            </div>
+
+                                            <div class="space-y-1">
+                                                <Label class="text-xs"
+                                                    >Share % (Optional)</Label
+                                                >
+                                                <Input
+                                                    v-model.number="
+                                                        component.share_percent
+                                                    "
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0"
+                                                    max="100"
+                                                    placeholder="Auto"
+                                                    class="h-9"
+                                                />
+                                            </div>
+
+                                            <div class="flex items-end">
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    class="h-9 w-9"
+                                                    @click="
+                                                        removeComponent(
+                                                            index,
+                                                            compIndex,
+                                                        )
+                                                    "
+                                                >
+                                                    <X class="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </div>
+
+                                        <Button
+                                            v-if="item.components.length < 2"
+                                            type="button"
+                                            size="sm"
+                                            variant="outline"
+                                            @click="addComponent(index)"
+                                        >
+                                            <Plus class="mr-2 h-4 w-4" />
+                                            Add Component
+                                        </Button>
+
+                                        <p
+                                            v-if="item.components.length >= 2"
+                                            class="text-xs text-muted-foreground"
+                                        >
+                                            Maximum 2 components per line item
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

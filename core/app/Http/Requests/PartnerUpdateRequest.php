@@ -22,7 +22,7 @@ class PartnerUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $partnerId = $this->route('partner');
+        $partnerId = $this->route('customer') ?? $this->route('supplier');
 
         return [
             'code' => ['nullable', 'string', 'max:255', Rule::unique('partners', 'code')->ignore($partnerId)],

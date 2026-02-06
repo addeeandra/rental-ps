@@ -23,7 +23,14 @@ import { formatCurrency, formatDate } from '@/composables/useFormatters';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { debounce } from '@/lib/utils';
 import type { PaginatedData } from '@/types/laravel';
-import type { Invoice, InvoiceStatus, Partner, Product } from '@/types/models';
+import type {
+    InventoryItem,
+    Invoice,
+    InvoiceStatus,
+    Partner,
+    Product,
+    Warehouse,
+} from '@/types/models';
 import { Head, router } from '@inertiajs/vue3';
 import { FileText, MoreVertical, Plus, Search } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
@@ -32,6 +39,8 @@ interface Props {
     invoices: PaginatedData<Invoice>;
     partners: Partner[];
     products: Product[];
+    warehouses: Warehouse[];
+    inventoryItems: InventoryItem[];
     defaultInvoiceTerms?: string | null;
     defaultInvoiceNotes?: string | null;
     filters: {
@@ -350,6 +359,8 @@ function openPreviewHtml(invoice: Invoice) {
             v-model:open="showCreateDialog"
             :partners="partners"
             :products="products"
+            :warehouses="warehouses"
+            :inventory-items="inventoryItems"
             :default-invoice-terms="defaultInvoiceTerms"
             :default-invoice-notes="defaultInvoiceNotes"
             @success="showCreateDialog = false"
