@@ -39,6 +39,14 @@ const mainNavItems: NavItem[] = [
         icon: LayoutGrid,
     },
     {
+        group: 'Orders',
+    },
+    {
+        title: 'Invoices',
+        href: '/invoices',
+        icon: FileBox,
+    },
+    {
         group: 'Contacts',
     },
     {
@@ -86,14 +94,6 @@ const mainNavItems: NavItem[] = [
         title: 'Movements',
         href: '/stock-movements',
         icon: ArrowLeftRight,
-    },
-    {
-        group: 'Orders',
-    },
-    {
-        title: 'Invoices',
-        href: '/invoices',
-        icon: FileBox,
     },
 ];
 

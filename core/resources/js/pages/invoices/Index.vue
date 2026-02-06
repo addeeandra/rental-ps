@@ -109,6 +109,10 @@ function openPreviewPdf(invoice: Invoice) {
 function openPreviewHtml(invoice: Invoice) {
     window.open(`/invoices/${invoice.id}/preview-html`, '_blank');
 }
+
+function openInvoiceDetail(invoice: Invoice) {
+    router.visit(`/invoices/${invoice.id}`);
+}
 </script>
 
 <template>
@@ -281,6 +285,11 @@ function openPreviewHtml(invoice: Invoice) {
                                         class="text-muted-foreground"
                                     >
                                         Edit Invoice (Locked)
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        @click="openInvoiceDetail(invoice)"
+                                    >
+                                        View Invoice
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
                                         @click="paymentInvoice = invoice"

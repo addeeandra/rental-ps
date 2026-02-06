@@ -62,13 +62,13 @@ const revenueSharesByOwner = computed(() => {
 
     props.invoice.invoice_items?.forEach((item) => {
         item.invoice_item_components?.forEach((component) => {
-            if (!component.owner) return;
+            if (!component.inventory_item?.owner) return;
 
             if (!shares[component.owner_id]) {
                 shares[component.owner_id] = {
                     owner: {
-                        id: component.owner.id,
-                        name: component.owner.name,
+                        id: component.inventory_item.owner.id,
+                        name: component.inventory_item.owner.name,
                     },
                     totalShare: 0,
                     components: [],
@@ -110,7 +110,7 @@ const statusVariant = (status: string) => {
     <AppLayout :breadcrumbs="breadcrumbs">
         <Head :title="`Invoice ${invoice.invoice_number}`" />
 
-        <div class="space-y-6">
+        <div class="flex flex-col gap-6 p-4">
             <!-- Header -->
             <div class="flex items-center justify-between">
                 <div>

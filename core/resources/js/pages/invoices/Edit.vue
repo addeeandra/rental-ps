@@ -14,7 +14,14 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { Invoice, OrderType, Partner, Product } from '@/types/models';
+import type {
+    InventoryItem,
+    Invoice,
+    OrderType,
+    Partner,
+    Product,
+    Warehouse,
+} from '@/types/models';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import { FileText, MoreVertical, Save } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
@@ -23,6 +30,8 @@ interface Props {
     invoice: Invoice;
     partners: Partner[];
     products: Product[];
+    warehouses: Warehouse[];
+    inventoryItems: InventoryItem[];
 }
 
 const props = defineProps<Props>();
@@ -58,12 +67,20 @@ const calculateDueDate = (invoiceDate: string): string => {
     return date.toISOString().split('T')[0];
 };
 
+interface LineItemComponent {
+    inventory_item_id: number;
+    warehouse_id: number;
+    qty: number;
+    share_percent?: number | null;
+}
+
 interface LineItem {
     product_id: number | null;
     description: string;
     quantity: number;
     unit_price: number;
     total: number;
+    components: LineItemComponent[];
 }
 
 // Calculate rental duration from start and end dates
@@ -107,6 +124,15 @@ const form = useForm({
         quantity: Number(item.quantity),
         unit_price: Number(item.unit_price),
         total: Number(item.total),
+        components:
+            item.invoice_item_components?.map((comp) => ({
+                inventory_item_id: comp.inventory_item_id,
+                warehouse_id: comp.warehouse_id,
+                qty: Number(comp.qty),
+                share_percent: comp.share_percent
+                    ? Number(comp.share_percent)
+                    : null,
+            })) || [],
     })) || [
         {
             product_id: null,
@@ -114,6 +140,7 @@ const form = useForm({
             quantity: 1,
             unit_price: 0,
             total: 0,
+            components: [],
         },
     ]) as LineItem[],
 });
@@ -240,7 +267,12 @@ function getStatusLabel(status: string): string {
                         :time-options="timeOptions"
                     />
 
-                    <InvoiceLineItems :form="form" :products="products" />
+                    <InvoiceLineItems
+                        :form="form"
+                        :products="products"
+                        :warehouses="warehouses"
+                        :inventory-items="inventoryItems"
+                    />
 
                     <InvoicePricingSummary :form="form" />
                 </CardContent>

@@ -76,6 +76,7 @@ class InvoiceController extends Controller
                 ->orderBy('name')
                 ->get(),
             'products' => Product::select('id', 'name', 'code', 'sales_price', 'rental_price')
+                ->with('productComponents')
                 ->whereNull('deleted_at')
                 ->orderBy('name')
                 ->get(),
@@ -208,8 +209,7 @@ class InvoiceController extends Controller
         $invoice->load([
             'partner',
             'user',
-            'invoiceItems.product.productComponents.inventoryItem',
-            'invoiceItems.invoiceItemComponents.inventoryItem.owner',
+            'invoiceItems.invoiceItemComponents.inventoryItem.owner:id,code,type,name',
             'invoiceItems.invoiceItemComponents.warehouse',
         ]);
 
@@ -228,7 +228,12 @@ class InvoiceController extends Controller
      */
     public function edit(Invoice $invoice): InertiaResponse
     {
-        $invoice->load(['partner', 'invoiceItems.product', 'user']);
+        $invoice->load([
+            'partner',
+            'invoiceItems.product.productComponents',
+            'invoiceItems.invoiceItemComponents',
+            'user',
+        ]);
         $settings = CompanySetting::current();
 
         return Inertia::render('invoices/Edit', [
@@ -243,6 +248,7 @@ class InvoiceController extends Controller
                 ->orderBy('name')
                 ->get(),
             'products' => Product::select('id', 'name', 'code', 'sales_price', 'rental_price')
+                ->with('productComponents')
                 ->whereNull('deleted_at')
                 ->orderBy('name')
                 ->get(),

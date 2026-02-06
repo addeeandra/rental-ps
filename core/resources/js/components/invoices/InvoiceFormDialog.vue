@@ -383,7 +383,7 @@ onMounted(() => {
 <template>
     <Dialog v-model:open="isOpen">
         <DialogContent
-            class="max-h-[90vh] max-w-5xl overflow-y-auto sm:max-w-7xl"
+            class="max-h-screen max-w-full overflow-y-auto p-2 sm:max-w-5xl sm:p-4"
         >
             <DialogHeader>
                 <DialogTitle>{{
@@ -398,7 +398,7 @@ onMounted(() => {
                 </DialogDescription>
             </DialogHeader>
 
-            <div class="space-y-6 py-4">
+            <div class="space-y-4 sm:space-y-6">
                 <!-- Customer Selection -->
                 <div class="space-y-2">
                     <Label for="partner_id">Customer *</Label>
@@ -512,7 +512,7 @@ onMounted(() => {
                 </div>
 
                 <!-- Order Type -->
-                <div class="space-y-2">
+                <div class="space-y-2 border-t pt-4">
                     <Label>Order Type *</Label>
                     <RadioGroup v-model="form.order_type" class="flex gap-4">
                         <div class="flex items-center space-x-2">
@@ -625,7 +625,7 @@ onMounted(() => {
                 </div>
 
                 <!-- Line Items -->
-                <div class="space-y-4">
+                <div class="space-y-4 border-t pt-2.5">
                     <div class="flex items-center justify-between">
                         <Label>Line Items *</Label>
                         <Button
@@ -639,11 +639,11 @@ onMounted(() => {
                         </Button>
                     </div>
 
-                    <div class="space-y-3">
+                    <div class="flex flex-col gap-3">
                         <div
                             v-for="(item, index) in form.line_items"
                             :key="index"
-                            class="grid gap-3 rounded-lg border-b p-1.5 md:grid-cols-[1fr,1fr,100px,120px,40px]"
+                            class="grid gap-3 rounded-lg border bg-gray-50 p-2.5 md:grid-cols-[1fr,1fr,100px,120px,40px]"
                         >
                             <div class="space-y-1">
                                 <Label class="text-xs">Product</Label>
@@ -707,7 +707,7 @@ onMounted(() => {
                             <div class="flex items-end">
                                 <Button
                                     type="button"
-                                    variant="ghost"
+                                    variant="destructive"
                                     size="icon"
                                     class="h-9 w-9"
                                     :disabled="form.line_items.length === 1"
@@ -803,54 +803,67 @@ onMounted(() => {
                                                             :key="invItem.id"
                                                             :value="invItem.id"
                                                         >
+                                                            <span
+                                                                class="text-xs text-gray-500"
+                                                                >{{
+                                                                    invItem.sku
+                                                                }}</span
+                                                            >—
                                                             {{ invItem.name }}
-                                                            ({{ invItem.sku }})
                                                         </SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                             </div>
 
-                                            <div class="space-y-1">
-                                                <Label class="text-xs"
-                                                    >Warehouse *</Label
-                                                >
-                                                <Select
-                                                    v-model="
-                                                        component.warehouse_id
-                                                    "
-                                                >
-                                                    <SelectTrigger class="h-9">
-                                                        <SelectValue
-                                                            placeholder="Select warehouse"
-                                                        />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem
-                                                            v-for="warehouse in warehouses"
-                                                            :key="warehouse.id"
-                                                            :value="
-                                                                warehouse.id
-                                                            "
+                                            <div class="flex flex-row gap-2">
+                                                <div class="space-y-1">
+                                                    <Label class="text-xs"
+                                                        >Warehouse *</Label
+                                                    >
+                                                    <Select
+                                                        v-model="
+                                                            component.warehouse_id
+                                                        "
+                                                    >
+                                                        <SelectTrigger
+                                                            class="h-9"
                                                         >
-                                                            {{ warehouse.name }}
-                                                        </SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </div>
+                                                            <SelectValue
+                                                                placeholder="Select warehouse"
+                                                            />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem
+                                                                v-for="warehouse in warehouses"
+                                                                :key="
+                                                                    warehouse.id
+                                                                "
+                                                                :value="
+                                                                    warehouse.id
+                                                                "
+                                                            >
+                                                                {{
+                                                                    warehouse.name
+                                                                }}
+                                                            </SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
 
-                                            <div class="space-y-1">
-                                                <Label class="text-xs"
-                                                    >Qty *</Label
-                                                >
-                                                <Input
-                                                    v-model.number="
-                                                        component.qty
-                                                    "
-                                                    type="number"
-                                                    step="0.001"
-                                                    min="0.001"
-                                                    class="h-9"
-                                                />
+                                                <div class="space-y-1">
+                                                    <Label class="text-xs"
+                                                        >Qty *</Label
+                                                    >
+                                                    <Input
+                                                        v-model.number="
+                                                            component.qty
+                                                        "
+                                                        type="number"
+                                                        step="0.001"
+                                                        min="0.001"
+                                                        class="h-9"
+                                                    />
+                                                </div>
                                             </div>
 
                                             <div class="space-y-1">
